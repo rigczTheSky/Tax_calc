@@ -1,0 +1,104 @@
+unit KalkulatorKosztowPracodawcy2021;
+
+interface
+
+uses
+System.SysUtils, unitMiesiaceRoku, UnitMiesiecznePracodawcy;
+
+const
+EMERYTALNE = 0.0976;
+RENTOWE = 0.065;
+WYPADKOWE = 0.0167;
+FUNDUSZ_PRACY = 0.0245;
+FGSP = 0.001;
+ZUS_LIMIT = 157770;
+
+type
+ksztPracodawcy2021 = class
+var
+tabMsc: UnitMiesiecznePracodawcy.roczneKosztyPracodawcy;
+constructor create(brutto: Double);
+function liczEmerytalne(brutto, emerytalneRazem: Double): Double;
+function liczRentowe(brutto, rentoweRazem: Double): Double;
+function toString: String;
+end;
+
+implementation
+
+constructor ksztPracodawcy2021.create(brutto: Double);
+var I: Integer;
+    spo쿮czneRazem: Double;
+begin
+spo쿮czneRazem := ZUS_LIMIT;
+for I := 1 to 12 do
+begin
+tabMsc[I]:= MscKosztPracodawcy.Create;
+tabMsc[I].emerytalne := liczEmerytalne(brutto, spo쿮czneRazem);
+tabMsc[I].rentowe := liczRentowe(brutto, spo쿮czneRazem);
+tabMsc[I].wypadkowe:= brutto * WYPADKOWE;
+tabMsc[I].fundPracy:= brutto * FUNDUSZ_PRACY;
+tabMsc[I].FGSP:= brutto * FGSP;
+tabMsc[I].ksztPracodawcy:= tabMsc[i].emerytalne
++ tabMsc[i].rentowe
++ tabMsc[i].wypadkowe
++ tabMsc[i].fundPracy
++ tabMsc[i].FGSP;
+tabMsc[I].ksztLaczny:= brutto + tabMsc[I].ksztPracodawcy;
+spo쿮czneRazem := spo쿮czneRazem - brutto;
+end;
+end;
+
+function zredukujDoSetnych(liczba: Double): Double;
+begin
+  liczba := liczba * 100;
+  liczba := round(liczba);
+  result := liczba / 100;
+end;
+
+function ksztPracodawcy2021.liczEmerytalne(brutto, emerytalneRazem: Double): Double;
+begin
+  if brutto < emerytalneRazem then
+    result := zredukujDoSetnych(brutto * EMERYTALNE)
+  else if (brutto > emerytalneRazem) AND (emerytalneRazem > 0) then
+    result := zredukujDoSetnych(emerytalneRazem * EMERYTALNE)
+  else
+    result := 0;
+end;
+
+function ksztPracodawcy2021.liczRentowe(brutto, rentoweRazem: Double): Double;
+begin
+  if brutto < rentoweRazem then
+    result := zredukujDoSetnych(brutto * RENTOWE)
+  else if (brutto > rentoweRazem) AND (rentoweRazem > 0) then
+    result := zredukujDoSetnych(rentoweRazem * RENTOWE)
+  else
+    result := 0;
+end;
+
+function ksztPracodawcy2021.toString: String;
+var I: Integer;
+    kosztRazem: Double;
+    msc_roku: unitMiesiaceRoku.tStringArray;
+    tekst: String;
+begin
+kosztRazem:= 0;
+for I := 1 to 12 do
+begin
+  msc_roku:= unitMiesiaceRoku.MIESIACE_ROKU;
+
+  tekst := tekst
+  + msc_roku[I]
+  //+ ' - emerytalne: '+ floatToStr(tabMsc[i].emerytalne)
+  //+ ' rentowe: '+ floatToStr(tabMsc[i].rentowe)
+  //+ ' wypadkowe: '+ floatToStr(tabMsc[i].wypadkowe)
+  //+ ' spo쿮czne: '+ floatToStr(tabMsc[i].emerytalne + tabMsc[i].rentowe + tabMsc[i].wypadkowe)
+  //+ ' fund. pracy: ' + floatToStr(tabMsc[i].fundPracy)
+  //+ ' FGSP: ' + floatToStr(tabMsc[i].FGSP)
+  + ' ca쿸owity koszt pracodawcy: ' + floatToStr(tabMsc[i].ksztLaczny)
+  + sLineBreak;
+  kosztRazem:= kosztRazem+tabMsc[i].ksztPracodawcy;
+end;
+  result:= tekst+'Koszty pracodawcy w skali roku to: '+floatToStr(kosztRazem);
+end;
+
+end.

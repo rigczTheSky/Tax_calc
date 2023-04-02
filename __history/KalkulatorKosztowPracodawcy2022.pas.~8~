@@ -1,0 +1,108 @@
+unit KalkulatorKosztowPracodawcy2022;
+
+interface
+
+uses
+System.SysUtils, unitMiesiaceRoku, UnitMiesiecznePracodawcy;
+
+const
+EMERYTALNE = 0.0976;
+RENTOWE = 0.065;
+WYPADKOWE = 0.0167;
+FUNDUSZ_PRACY = 0.0245;
+FGSP = 0.001;
+ZUS_LIMIT = 177660;
+WRN_K_PRACODAWCY = 'UWAGA! OBLICZENIA KOSZTÓW PRACODAWCY DLA WYNAGRODZENIA'
++ sLineBreak + 'POWY¯EJ 100 TYS. Z£OTYCH MIESIÊCZNIE MOG¥ BYÆ OBARCZONE B£ÊDEM!';
+MyString = 'This is a string'#13#10'This is line 2';
+
+type
+ksztPracodawcy2022 = class
+var
+tabMsc: UnitMiesiecznePracodawcy.roczneKosztyPracodawcy;
+constructor create(brutto: Double);
+function liczEmerytalne(brutto, emerytalneRazem: Double): Double;
+function liczRentowe(brutto, rentoweRazem: Double): Double;
+function toString: String;
+end;
+
+implementation
+
+constructor ksztPracodawcy2022.create(brutto: Double);
+var I: Integer;
+    spo³eczneRazem: Double;
+begin
+spo³eczneRazem := ZUS_LIMIT;
+for I := 1 to 12 do
+begin
+tabMsc[I]:= MscKosztPracodawcy.Create;
+tabMsc[I].emerytalne := liczEmerytalne(brutto, spo³eczneRazem);
+tabMsc[I].rentowe := liczRentowe(brutto, spo³eczneRazem);
+tabMsc[I].wypadkowe:= brutto * WYPADKOWE;
+tabMsc[I].fundPracy:= brutto * FUNDUSZ_PRACY;
+tabMsc[I].FGSP:= brutto * FGSP;
+tabMsc[I].ksztPracodawcy:= tabMsc[i].emerytalne
++ tabMsc[i].rentowe
++ tabMsc[i].wypadkowe
++ tabMsc[i].fundPracy
++ tabMsc[i].FGSP;
+tabMsc[i].ksztLaczny:= brutto + tabMsc[i].ksztPracodawcy;
+spo³eczneRazem := spo³eczneRazem - brutto;
+end;
+end;
+
+function zredukujDoSetnych(liczba: Double): Double;
+begin
+  liczba := liczba * 100;
+  liczba := round(liczba);
+  result := liczba / 100;
+end;
+
+function ksztPracodawcy2022.liczEmerytalne(brutto, emerytalneRazem: Double): Double;
+begin
+  if brutto < emerytalneRazem then
+    result := zredukujDoSetnych(brutto * EMERYTALNE)
+  else if (brutto > emerytalneRazem) AND (emerytalneRazem > 0) then
+    result := zredukujDoSetnych(emerytalneRazem * EMERYTALNE)
+  else
+    result := 0;
+end;
+
+function ksztPracodawcy2022.liczRentowe(brutto, rentoweRazem: Double): Double;
+begin
+  if brutto < rentoweRazem then
+    result := zredukujDoSetnych(brutto * RENTOWE)
+  else if (brutto > rentoweRazem) AND (rentoweRazem > 0) then
+    result := zredukujDoSetnych(rentoweRazem * RENTOWE)
+  else
+    result := 0;
+end;
+
+function ksztPracodawcy2022.toString: String;
+var I: Integer;
+    kosztRazem: Double;
+    msc_roku: unitMiesiaceRoku.tStringArray;
+    tekst: String;
+begin
+kosztRazem:= 0;
+tekst := MyString + sLineBreak;
+for I := 1 to 12 do
+begin
+  msc_roku:= unitMiesiaceRoku.MIESIACE_ROKU;
+
+  tekst := tekst
+  + msc_roku[I]
+  + ' - emerytalne: '+ floatToStr(tabMsc[i].emerytalne)
+  + ' rentowe: '+ floatToStr(tabMsc[i].rentowe)
+  + ' wypadkowe: '+ floatToStr(tabMsc[i].wypadkowe)
+  //+ ' spo³eczne: '+ floatToStr(tabMsc[i].emerytalne + tabMsc[i].rentowe + tabMsc[i].wypadkowe)
+  + ' fund. pracy: ' + floatToStr(tabMsc[i].fundPracy)
+  + ' FGSP: ' + floatToStr(tabMsc[i].FGSP)
+  + ' ca³kowity koszt pracodawcy: ' + floatToStr(tabMsc[i].ksztLaczny)
+  + sLineBreak;
+  kosztRazem:= kosztRazem+tabMsc[i].ksztPracodawcy;
+end;
+  result:= tekst+'Koszty pracodawcy w skali roku to: '+floatToStr(kosztRazem);
+end;
+
+end.

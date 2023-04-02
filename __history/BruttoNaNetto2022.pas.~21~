@@ -1,0 +1,66 @@
+unit BruttoNaNetto2022;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
+  UnitMiesieczne,
+  unitMiesiaceRoku, Narzedzia, Spoleczne, UlgaDlaKlasySredniej, Zaliczka, UnitDaneRoczne;
+
+Const
+  ZUS_LIMIT = 177660;
+  WOLNA_KW = 425;
+  PROC_EMERYT = 0.0976;
+  PROC_RENTOW = 0.015;
+  PROC_CHOROB = 0.0245;
+  PROC_ZDR = 0.09;
+  KOSZT_WK = 300;
+  KOSZT_MN = 250;
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+  PROG_PIT = 120000;
+  PROG_DLA_26 = 85528;
+
+function stworzTablice22(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
+wlkTablicy: Integer = 12): tablicaMiesiecy;
+
+type
+  MSC = UnitMiesieczne.miesieczne;
+  tablicaMiesiêcy = UnitMiesieczne.tablicaMiesiecy;
+
+implementation
+
+function stworzTablice22(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
+wlkTablicy: Integer = 12): tablicaMiesiecy;
+var
+  BruttoRazem, spo³eczneRazem, podstawaRazem, ulga: Double;
+  tm: UnitMiesieczne.tablicaMiesiecy;
+begin
+  BruttoRazem := 0;
+  spo³eczneRazem := rok.limitZus;
+  podstawaRazem := 0;
+  for var I := 1 to wlkTablicy do
+  begin
+    tm[I] := MSC.Create;
+    BruttoRazem := BruttoRazem + brutto;
+    ulga := liczUlgê(brutto, rok.czyUlgaDlaSredniej);
+    tm[I].emerytalne := liczSpoleczne(brutto, spo³eczneRazem, PROC_EMERYT);
+    tm[I].rentowe := liczSpoleczne(brutto, spo³eczneRazem, PROC_RENTOW);
+    tm[I].chorobowe := redDoSetnych(brutto * PROC_CHOROB);
+    tm[I].podstawa := minZero(round(brutto - tm[I].emerytalne - tm[I].rentowe -
+      tm[I].chorobowe - kosztPrzychodu - ulga));
+    podstawaRazem := podstawaRazem + tm[I].podstawa;
+ tm[i].zaliczka :=
+    liczZaliczke(tm[I].podstawa, podstawaRazem, bruttoRazem, PROG_PIT, WOLNA_KW, ulga26);
+    tm[I].zdrowotne := redDoSetnych((brutto - tm[I].emerytalne - tm[I].rentowe -
+      tm[I].chorobowe) * PROC_ZDR);
+    tm[I].netto := redDoSetnych(brutto - tm[I].emerytalne - tm[I].rentowe -
+      tm[I].chorobowe - tm[I].zaliczka - tm[I].zdrowotne);
+    spo³eczneRazem := spo³eczneRazem - brutto;
+  end;
+  result := tm;
+end;
+
+end.

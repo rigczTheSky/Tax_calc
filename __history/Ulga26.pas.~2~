@@ -1,0 +1,52 @@
+unit Ulga26;
+
+interface
+
+uses
+Narzedzia;
+
+Const
+  WOLNA_KW_22 = 425;
+  PROC_EMERYT = 0.0976;
+  PROC_RENTOW = 0.015;
+  PROC_CHOROB = 0.0245;
+  PROC_ZDR = 0.09;
+  KOSZT_WK = 300;
+  KOSZT_MN = 250;
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+  PROG_PIT_22 = 120000;
+  PROG_DLA_26 = 85528;
+
+function liczUlge26_22(podstawa, podstawaRazem, BruttoRazem: Double): Double;
+
+implementation
+
+function liczUlge26_22(podstawa, podstawaRazem, BruttoRazem: Double): Double;
+var
+  czêœæ1, czêœæ2, zaliczka: Double;
+begin
+  if BruttoRazem < PROG_DLA_26 then
+  begin
+  zaliczka:= 0
+  end
+  else if (BruttoRazem > PROG_DLA_26) and (PodstawaRazem < PROG_PIT_22 *2) then
+  begin
+  zaliczka:= round(redDoSetnych(podstawa * PIT_MN)-WOLNA_KW_22)
+  end
+  else if (PodstawaRazem > PROG_PIT_22 * 2) and (PodstawaRazem < PROG_PIT_22 * 2 + podstawa) then
+  begin
+  czêœæ2:= podstawaRazem - (PROG_PIT_22 *2);
+  czêœæ1:= podstawa - czêœæ2;
+  czêœæ1:= czêœæ1 * 0.17;
+  czêœæ2:= czêœæ2 * 0.32;
+  zaliczka:= round(czêœæ1+czêœæ2-WOLNA_KW_22);
+  end
+  else
+  begin
+  zaliczka:= round(redDoSetnych(podstawa * PIT_W));
+  end;
+  result:=zaliczka;
+end;
+
+end.

@@ -1,0 +1,86 @@
+unit BruttoNaNetto2021;
+
+interface
+ uses
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+     UnitMiesieczne, unitMiesiaceRoku, Spoleczne, Narzedzia, Zaliczka, UnitDaneRoczne;
+
+Const
+  ZUS_LIMIT = 157770;
+  WOLNA_KW = 43.76;
+  PROC_EMERYT = 0.0976;
+  PROC_RENTOW = 0.015;
+  PROC_CHOROB = 0.0245;
+  PROC_ZDR_OD = 0.0775;
+  PROC_ZDR = 0.09;
+  KOSZT_WK = 300;
+  KOSZT_MN = 250;
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+  PROG_PIT = 85528;
+
+function liczZdrowotne(podstawaZdr, podstawaPIT: Double): Double;
+function stworzTablice21(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
+wlkTablicy: Integer = 12): tablicaMiesiecy;
+
+type
+  MSC = UnitMiesieczne.miesieczne;
+  tablicaMiesiecy = UnitMiesieczne.tablicaMiesiecy;
+  Kalk2021 = Class
+  var
+    tm: tablicaMiesiecy;
+    styczen: MSC;
+    ulga26: Boolean;
+  End;
+
+implementation
+
+function liczZdrowotne(podstawaZdr, podstawaPIT: Double): Double;
+var zdrowotne: Double;
+var prezaliczka: Double;//zaliczka PIT bez odjêtej sk³adki zdrowotnej
+begin
+zdrowotne := redDoSetnych(podstawaZdr * PROC_ZDR);
+prezaliczka :=  redDoSetnych(podstawaPIT * PIT_MN - WOLNA_KW);
+if (zdrowotne > prezaliczka) then
+result := minZero(prezaliczka)
+else
+result := zdrowotne;
+end;
+
+function liczZdrDoOdliczenia(rok: Rok; podstawaZdr: Double): Double;
+begin
+if rok.czyOdliczycZdrowotne then
+result := podstawaZdr * PROC_ZDR_OD
+else
+result := 0;
+end;
+
+function stworzTablice21(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
+wlkTablicy: Integer = 12): tablicaMiesiecy;
+var
+  bruttoRazem, spoleczneRazem, podstawaRazem, podstawaZdr, zdrDoOdliczenia: Double;
+  tm: UnitMiesieczne.tablicaMiesiecy;
+begin
+  bruttoRazem := 0;
+  spoleczneRazem := rok.limitZus;
+  podstawaRazem := 0;
+for var I := 1 to wlkTablicy do
+  begin
+    tm[I] := MSC.Create;
+    bruttoRazem:= bruttoRazem+brutto;
+    tm[I].emerytalne := liczSpoleczne(brutto, spoleczneRazem, PROC_EMERYT);
+    tm[I].rentowe := liczSpoleczne(brutto, spoleczneRazem, PROC_RENTOW);
+    tm[I].chorobowe := redDoSetnych(brutto * PROC_CHOROB);
+    podstawaZdr:= redDoSetnych(brutto - tm[I].emerytalne - tm[I].rentowe - tm[I].chorobowe);
+    tm[I].podstawa := minZero(round(podstawaZdr - kosztPrzychodu));
+    podstawaRazem := podstawaRazem + tm[I].podstawa;
+    zdrDoOdliczenia:= liczZdrDoOdliczenia(rok, podstawaZdr);
+    tm[i].zaliczka :=
+    liczZaliczke(tm[I].podstawa, podstawaRazem, bruttoRazem, PROG_PIT, rok.kwotaWolna, ulga26, zdrDoOdliczenia);
+    tm[i].zdrowotne := liczZdrowotne(podstawaZdr, tm[i].podstawa);
+    tm[I].netto := redDoSetnych(podstawaZdr - tm[I].zaliczka - tm[I].zdrowotne);
+    spoleczneRazem := spoleczneRazem - brutto;
+  end;
+  result := tm;
+end;
+end.

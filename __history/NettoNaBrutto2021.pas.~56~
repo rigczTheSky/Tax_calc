@@ -1,0 +1,51 @@
+unit NettoNaBrutto2021;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, UnitMiesieczne, unitMiesiaceRoku, Narzedzia, Spoleczne,
+  BruttoNaNetto2021;
+
+Const
+  ZUS_LIMIT = 157770;
+  WOLNA_KW = 43.76;
+  PROC_EMERYT = 0.0976;
+  PROC_RENTOW = 0.015;
+  PROC_CHOROB = 0.0245;
+  PROC_ZDR_OD = 0.0775;
+  PROC_ZDR = 0.09;
+  KOSZT_WK = 300;
+  KOSZT_MN = 250;
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+  PROG_PIT = 85528;
+
+function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean): Double;
+
+implementation
+
+function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean): Double;
+var
+  min, max, I: Integer;
+  wynik, stycznioweNetto: Double;
+  tm: unitMiesieczne.tablicaMiesiecy;
+begin
+  wynik := -1;
+  min := trunc(netto * 100);
+  max := trunc(netto * 200);
+  for I := min to max do
+  begin
+    tm := stworzTablice21(i /100, kPrzychodu, ulgaDo26, 1);
+    stycznioweNetto := tm[1].netto;
+    tm[1].Free;
+    if stycznioweNetto = netto then
+    begin
+      wynik := I / 100;
+      break
+    end;
+  end;
+  result := wynik;
+end;
+
+end.

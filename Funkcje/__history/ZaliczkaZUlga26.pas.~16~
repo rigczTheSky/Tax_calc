@@ -1,0 +1,41 @@
+unit ZaliczkaZUlga26;
+
+interface
+
+uses
+  Narzedzia;
+
+Const
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+
+function liczUlge26(podstawa, podstawaRazem, BruttoRazem, progPit,
+  wolnaKwota: Double; zdrDoOdliczenia: Double = 0): Double;
+
+implementation
+
+function liczProgowyMiesiac(progPit, wolnaKwota, podstawa, podstawaRazem: Double;
+zdrDoOdliczenia: Double = 0): Double;
+begin
+    var czesc1 := progPit - (podstawaRazem - podstawa);
+    czesc1 := czesc1 * PIT_MN;
+    var czesc2 := (podstawaRazem - progPit) * PIT_W;
+    result := round(redDoSetnych(czesc1 + czesc2 - wolnaKwota) -
+      zdrDoOdliczenia);
+end;
+
+function liczUlge26(podstawa, podstawaRazem, BruttoRazem, progPit,
+  wolnaKwota: Double; zdrDoOdliczenia: Double = 0): Double;
+begin
+  if BruttoRazem < progPit then
+    result := 0
+  else if {(BruttoRazem > progPit) and }(podstawaRazem < progPit * 2) then
+    result := round(redDoSetnych(podstawa * PIT_MN) - zdrDoOdliczenia -
+      wolnaKwota)
+  else if (podstawaRazem > progPit * 2) and
+    (podstawaRazem < progPit * 2 + podstawa) then
+    result := liczProgowyMiesiac(progPit * 2, wolnaKwota, podstawa, podstawaRazem, zdrDoOdliczenia)
+  else
+    result := round(redDoSetnych(podstawa * PIT_W) - zdrDoOdliczenia);
+end;
+end.

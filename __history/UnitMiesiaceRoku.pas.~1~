@@ -1,0 +1,11 @@
+unit UnitMiesiaceRoku;
+
+interface
+
+type
+miesiπce = (STYCZE—, LUTY, MARZEC, KWIECIE—, MAJ, CZERWIEC, LIPIEC,
+SIERPIE—, WRZESIE—, PAèDZIERNIK, LISTOPAD, GRUDZIE—);
+
+implementation
+
+end.

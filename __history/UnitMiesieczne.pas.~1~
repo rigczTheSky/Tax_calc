@@ -1,0 +1,15 @@
+unit UnitMiesieczne;
+
+interface
+
+type
+miesieczne = class
+public
+  brutto, netto, podstawa, emerytalne, rentowe, chorobowe, zdrowotne,
+  zdrDoOdliczenia, prezaliczka, zaliczka: double;
+end;
+tablicaMiesiêcy = Array [1 .. 12] of miesieczne;
+
+implementation
+
+end.

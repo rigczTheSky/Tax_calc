@@ -1,0 +1,27 @@
+program Project1;
+
+uses
+  Vcl.Forms,
+  Unit1 in 'Unit1.pas' {FormGlowny},
+  PorownanieRozliczen in 'PorownanieRozliczen.pas',
+  UnitMiesiaceRoku in 'Model\UnitMiesiaceRoku.pas',
+  UnitMiesiecznePracodawcy in 'Model\UnitMiesiecznePracodawcy.pas',
+  NettoNaBrutto2021 in 'NettoNaBrutto2021.pas',
+  NettoNaBrutto2022 in 'NettoNaBrutto2022.pas',
+  KalkulatorKosztowPracodawcy in 'KalkulatorKosztowPracodawcy.pas',
+  UnitMiesieczne in 'Model\UnitMiesieczne.pas',
+  Narzedzia in 'Funkcje\Narzedzia.pas',
+  Spoleczne in 'Funkcje\Spoleczne.pas',
+  ZaliczkaZUlga26 in 'Funkcje\ZaliczkaZUlga26.pas',
+  ZaliczkaBezUlgi26 in 'Funkcje\ZaliczkaBezUlgi26.pas',
+  UlgaDlaKlasySredniej in 'Funkcje\UlgaDlaKlasySredniej.pas',
+  Zaliczka in 'Funkcje\Zaliczka.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFormGlowny, FormGlowny);
+  Application.Run;
+end.

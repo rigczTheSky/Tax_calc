@@ -1,0 +1,14 @@
+unit Zaliczka;
+
+interface
+
+uses
+  Narzedzia;
+
+Const
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+
+implementation
+
+end.

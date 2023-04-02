@@ -1,0 +1,61 @@
+unit Zaliczka;
+
+interface
+
+uses
+  Narzedzia;
+
+Const
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+
+implementation
+
+function liczZUlga26(podstawa, podstawaRazem, BruttoRazem, progPit,
+  wolnaKwota: Double; zdrDoOdliczenia: Double = 0): Double;
+var
+  czesc1, czesc2, Zaliczka: Double;
+begin
+  if BruttoRazem < progPit then
+    Zaliczka := 0
+  else if (BruttoRazem > progPit) and (podstawaRazem < progPit * 2) then
+    Zaliczka := round(redDoSetnych(podstawa * PIT_MN) - zdrDoOdliczenia -
+      wolnaKwota)
+  else if (podstawaRazem > progPit * 2) and
+    (podstawaRazem < progPit * 2 + podstawa) then
+  begin
+    czesc2 := podstawaRazem - (progPit * 2);
+    czesc1 := podstawa - czesc2;
+    czesc1 := czesc1 * PIT_MN;
+    czesc2 := czesc2 * PIT_W;
+    Zaliczka := round(czesc1 + czesc2 - zdrDoOdliczenia - wolnaKwota);
+  end
+  else
+    Zaliczka := round(redDoSetnych(podstawa * PIT_W) - zdrDoOdliczenia);
+  result := Zaliczka;
+end;
+
+function liczZaliczke(podstawa, podstawaRazem, progPit, wolnaKwota: Double; zdrDoOdliczenia: Double = 0): Double;
+var
+  czesc1, czesc2, zaliczka: Double;
+begin
+  if podstawaRazem < progPit then
+  begin
+  zaliczka:=  redDoSetnych(podstawa * PIT_MN - wolnaKwota);
+    if (zaliczka - zdrDoOdliczenia > 0)
+    then result := round(zaliczka - zdrDoOdliczenia)
+    else result := 0;
+  end
+  else if (podstawaRazem - podstawa < progPit) AND (podstawaRazem > progPit)
+  then
+  begin
+    czesc1 := progPit - (podstawaRazem - podstawa);
+    czesc1 := czesc1 * PIT_MN;
+    czesc2 := (podstawaRazem - progPit) * PIT_W;
+    result := round(redDoSetnych(czesc1 + czesc2 - wolnaKwota) - zdrDoOdliczenia);
+  end
+  else
+    result := round(redDoSetnych(podstawa * PIT_W) - zdrDoOdliczenia);
+end;
+
+end.

@@ -1,0 +1,15 @@
+unit UnitMiesiecznePracodawcy;
+
+interface
+
+type
+MscKosztPracodawcy = class
+var
+emerytalne, rentowe, wypadkowe, fundPracy, FGSP, ksztPracodawcy,
+ksztLaczny: Double;
+end;
+roczneKosztyPracodawcy = Array [1..12] of MscKosztPracodawcy;
+
+implementation
+
+end.

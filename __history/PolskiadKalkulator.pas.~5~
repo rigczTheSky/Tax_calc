@@ -1,0 +1,157 @@
+unit Polski£adKalkulator;
+
+interface
+
+uses
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls, UnitMiesieczne,
+  unitMiesiaceRoku;
+
+Const
+  ZUS_LIMIT = 177660;
+  WOLNA_KW = 425;
+  PROC_EMERYT = 0.0976;
+  PROC_RENTOW = 0.015;
+  PROC_CHOROB = 0.0245;
+  PROC_ZDR = 0.09;
+  KOSZT_WK = 300;
+  KOSZT_MN = 250;
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+  PRÓG_PIT = 120000;
+  ULGA_PRÓG_1 = 5701;
+  ULGA_PRÓG_2 = 8549;
+  ULGA_PRÓG_3 = 11141;
+
+type
+  MSC = UnitMiesieczne.miesieczne;
+  tablicaMiesiêcy = UnitMiesieczne.tablicaMiesiêcy;
+
+  P£adKalk = Class
+  var
+    tm: tablicaMiesiêcy;
+    constructor stwórzTablicê(brutto, kosztPrzychodu: Double);
+    function liczRentowe(brutto, rentoweRazem: Double): Double;
+    function dajTablicê: tablicaMiesiêcy;
+    function liczEmerytalne(brutto, emerytalneRazem: Double): Double;
+    function liczZaliczkê(podstawa, podstawaRazem: Double): Double;
+    function liczUlgê(brutto: Double): Double;
+    function toString: String;
+  End;
+
+implementation
+
+function zredukujDoSetnych(liczba: Double): Double;
+begin
+  liczba := liczba * 100;
+  liczba := round(liczba);
+  result := liczba / 100;
+end;
+
+constructor P£adKalk.stwórzTablicê(brutto, kosztPrzychodu: Double);
+var
+  I: Integer;
+var
+  spo³eczneRazem, podstawaRazem, ulga: Double;
+begin
+  spo³eczneRazem := ZUS_LIMIT;
+  podstawaRazem := 0;
+  for I := 1 to 12 do
+  begin
+    tm[I] := MSC.Create;
+    tm[I].brutto := brutto;
+    ulga := liczUlgê(brutto);
+    tm[I].emerytalne := liczEmerytalne(tm[I].brutto, spo³eczneRazem);
+    tm[I].rentowe := liczRentowe(tm[I].brutto, spo³eczneRazem);
+    tm[I].chorobowe := tm[I].brutto * PROC_CHOROB;
+    tm[I].podstawa := round(brutto - tm[I].emerytalne - tm[I].rentowe -
+      tm[I].chorobowe - kosztPrzychodu - ulga);
+    podstawaRazem := podstawaRazem + tm[I].podstawa;
+    tm[I].zaliczka := liczZaliczkê(tm[I].podstawa, podstawaRazem);
+    tm[I].zdrowotne := (tm[I].brutto - tm[I].emerytalne - tm[I].rentowe -
+      tm[I].chorobowe) * PROC_ZDR;
+    tm[I].netto := zredukujDoSetnych(tm[I].brutto - tm[I].emerytalne - tm[I].rentowe -
+      tm[I].chorobowe - tm[I].zaliczka - tm[I].zdrowotne);
+    spo³eczneRazem := spo³eczneRazem - brutto;
+  end;
+end;
+
+function P£adKalk.liczUlgê(brutto: Double): Double;
+begin
+  if (brutto >= ULGA_PRÓG_1) and (brutto < ULGA_PRÓG_2) then
+    result := zredukujDoSetnych((brutto * 0.0668 - 380.5) / 0.17)
+  else if (brutto >= ULGA_PRÓG_2) and (brutto < ULGA_PRÓG_3) then
+    result := zredukujDoSetnych((brutto * -0.0735 + 819.08) / 0.17)
+  else
+    result := 0;
+end;
+
+function P£adKalk.liczZaliczkê(podstawa, podstawaRazem: Double): Double;
+var
+  czêœæ1, czêœæ2, zaliczka: Double;
+begin
+  if podstawaRazem < PRÓG_PIT then
+  begin
+  zaliczka:= round(podstawa * PIT_MN - WOLNA_KW);
+  if (zaliczka>0) then result:=zaliczka else result:= 0;
+  end
+  else if (podstawaRazem - podstawa < PRÓG_PIT) AND (podstawaRazem > PRÓG_PIT)
+  then
+  begin
+    czêœæ1 := PRÓG_PIT - (podstawaRazem - podstawa);
+    czêœæ1 := czêœæ1 * PIT_MN;
+    czêœæ2 := (podstawaRazem - PRÓG_PIT) * PIT_W;
+    result := round(czêœæ1 + czêœæ2 - WOLNA_KW)
+  end
+  else
+    result := round(podstawa * PIT_W - WOLNA_KW);
+end;
+
+function P£adKalk.liczEmerytalne(brutto, emerytalneRazem: Double): Double;
+begin
+  if brutto < emerytalneRazem then
+    result := zredukujDoSetnych(brutto * PROC_EMERYT)
+  else if (brutto > emerytalneRazem) AND (emerytalneRazem > 0) then
+    result := zredukujDoSetnych(emerytalneRazem * PROC_EMERYT)
+  else
+    result := 0;
+end;
+
+function P£adKalk.liczRentowe(brutto, rentoweRazem: Double): Double;
+begin
+  if brutto < rentoweRazem then
+    result := zredukujDoSetnych(brutto * PROC_RENTOW)
+  else if (brutto > rentoweRazem) AND (rentoweRazem > 0) then
+    result := zredukujDoSetnych(rentoweRazem * PROC_RENTOW)
+  else
+    result := 0;
+end;
+
+function P£adKalk.toString: String;
+var I: Integer;
+    nettoRazem: Double;
+    msc_roku: unitMiesiaceRoku.tStringArray;
+    tekst: String;
+begin
+for I := 1 to 12 do
+begin
+  msc_roku := unitMiesiaceRoku.MIESIACE_ROKU;
+  tekst := tekst
+  + msc_roku[I]
+  + ' - spo³eczne: '+ floatToStr(tm[i].emerytalne + tm[i].rentowe + tm[i].chorobowe)
+  + ' podstawa: ' + floatToStr(tm[i].podstawa)
+  + ' zaliczka PIT: ' + floatToStr(tm[i].zaliczka)
+  + ' zdrowotne: ' + floatToStr(tm[i].zdrowotne)
+  + ' netto ' + floatToStr(tm[i].netto)
+  + sLineBreak;
+  nettoRazem:= nettoRazem+tm[i].netto;
+end;
+  result:= tekst+'Kwota netto w skali roku to: '+floatToStr(nettoRazem);
+end;
+
+function P£adKalk.dajTablicê: tablicaMiesiêcy;
+begin
+  result := tm;
+end;
+
+end.

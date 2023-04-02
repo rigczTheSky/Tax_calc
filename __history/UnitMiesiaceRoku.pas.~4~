@@ -1,0 +1,20 @@
+unit UnitMiesiaceRoku;
+
+interface
+
+type
+tStringArray = Array [1..12] of String;
+
+const
+MIESIACE_ROKU: Array [1..12] of String = (
+'STYCZE—', 'LUTY', 'MARZEC', 'KWIECIE—', 'MAJ', 'CZERWIEC', 'LIPIEC',
+'SIERPIE—', 'WRZESIE—', 'PAèDZIERNIK', 'LISTOPAD', 'GRUDZIE—');
+//function zwrocMscRoku():tStringArray;
+
+implementation
+//function zwrocMscRoku():tStringArray;
+//begin
+//  result:=MIESIACE_ROKU;
+//end;
+
+end.

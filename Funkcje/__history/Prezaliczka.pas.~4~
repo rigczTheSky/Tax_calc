@@ -1,0 +1,41 @@
+unit Prezaliczka;
+
+interface
+
+uses
+Narzedzia;
+
+Const
+  WOLNA_KW = 43.76;
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+  PRÓG_PIT = 85528;
+
+function liczPreZaliczke(podstawa, podstawaRazem, zdrDoOdliczenia: Double): Double;
+
+implementation
+
+function liczPreZaliczke(podstawa, podstawaRazem, zdrDoOdliczenia: Double): Double;
+var
+  czêœæ1, czêœæ2, zaliczka: Double;
+begin
+  if podstawaRazem < PRÓG_PIT then
+  begin
+  zaliczka:=  redDoSetnych(podstawa * PIT_MN - WOLNA_KW);
+    if (zaliczka - zdrDoOdliczenia > 0)
+    then result := zaliczka - zdrDoOdliczenia
+    else result := 0;
+  end
+  else if (podstawaRazem - podstawa < PRÓG_PIT) AND (podstawaRazem > PRÓG_PIT)
+  then
+  begin
+    czêœæ1 := PRÓG_PIT - (podstawaRazem - podstawa);
+    czêœæ1 := czêœæ1 * PIT_MN;
+    czêœæ2 := (podstawaRazem - PRÓG_PIT) * PIT_W;
+    result := redDoSetnych(czêœæ1 + czêœæ2 - WOLNA_KW) - zdrDoOdliczenia;
+  end
+  else
+    result := redDoSetnych(podstawa * PIT_W) - zdrDoOdliczenia;
+end;
+
+end.

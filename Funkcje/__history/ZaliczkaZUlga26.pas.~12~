@@ -1,0 +1,45 @@
+unit ZaliczkaZUlga26;
+
+interface
+
+uses
+Narzedzia;
+
+Const
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+
+function liczUlge26(podstawa, podstawaRazem,
+BruttoRazem, progPit, wolnaKwota: Double; zdrDoOdliczenia: Double = 0): Double;
+
+implementation
+
+function liczUlge26(podstawa, podstawaRazem,
+BruttoRazem, progPit, wolnaKwota: Double; zdrDoOdliczenia: Double = 0): Double;
+var
+  czesc1, czesc2, zaliczka: Double;
+begin
+  if BruttoRazem < progPit then
+  begin
+  zaliczka:= 0
+  end
+  else if (BruttoRazem > progPit) and (PodstawaRazem < progPit * 2) then
+  begin
+  zaliczka:= round(redDoSetnych(podstawa * PIT_MN)-zdrDoOdliczenia-wolnaKwota)
+  end
+  else if (PodstawaRazem > progPit * 2) and (PodstawaRazem < progPit * 2 + podstawa) then
+  begin
+  czesc2:= podstawaRazem - (progPit *2);
+  czesc1:= podstawa - czesc2;
+  czesc1:= czesc1 * PIT_MN;
+  czesc2:= czesc2 * PIT_W;
+  zaliczka:= round(czesc1+czesc2-zdrDoOdliczenia-wolnaKwota);
+  end
+  else
+  begin
+  zaliczka:= round(redDoSetnych(podstawa * PIT_W)-zdrDoOdliczenia);
+  end;
+  result:=zaliczka;
+end;
+
+end.

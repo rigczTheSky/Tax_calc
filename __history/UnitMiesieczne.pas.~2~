@@ -1,0 +1,20 @@
+unit UnitMiesieczne;
+
+interface
+
+uses
+   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
+  Kalkulator2021, Polski£adKalkulator, UnitMiesieczne;
+
+type
+miesieczne = class
+public
+  brutto, netto, podstawa, emerytalne, rentowe, chorobowe, zdrowotne,
+  zdrDoOdliczenia, prezaliczka, zaliczka: double;
+end;
+tablicaMiesiêcy = Array [1 .. 12] of miesieczne;
+
+implementation
+
+end.

@@ -1,0 +1,148 @@
+unit BruttoNettoFunkcje2022;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, UnitMiesieczne, unitMiesiaceRoku, Spoleczne, Narzedzia;
+
+Const
+  ZUS_LIMIT = 177660;
+  WOLNA_KW = 425;
+  PROC_EMERYT = 0.0976;
+  PROC_RENTOW = 0.015;
+  PROC_CHOROB = 0.0245;
+  PROC_ZDR = 0.09;
+  KOSZT_WK = 300;
+  KOSZT_MN = 250;
+  PIT_MN = 0.17;
+  PIT_W = 0.32;
+  PRÓG_PIT = 120000;
+  PRÓG_DLA_26 = 85528;
+  ULGA_PRÓG_1 = 5701;
+  ULGA_PRÓG_2 = 8549;
+  ULGA_PRÓG_3 = 11141;
+
+function dajStycznioweNetto(brutto: Double; kosztPrzychodu: Double;
+  ulga26: Boolean): Double;
+function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean): Double;
+
+implementation
+
+function liczUlgê(brutto: Double): Double;
+begin
+  if (brutto >= ULGA_PRÓG_1) and (brutto < ULGA_PRÓG_2) then
+    result := redDoSetnych((brutto * 0.0668 - 380.5) / 0.17)
+  else if (brutto >= ULGA_PRÓG_2) and (brutto < ULGA_PRÓG_3) then
+    result := redDoSetnych((brutto * -0.0735 + 819.08) / 0.17)
+  else
+    result := 0;
+end;
+
+function liczZaliczkê(podstawa, podstawaRazem: Double): Double;
+var
+  czêœæ1, czêœæ2, zaliczka: Double;
+begin
+  if podstawaRazem < PRÓG_PIT then
+  begin
+  zaliczka:= round(podstawa * PIT_MN - WOLNA_KW);
+  if (zaliczka>0) then result:=zaliczka else result:= 0;
+  end
+  else if (podstawaRazem - podstawa < PRÓG_PIT) AND (podstawaRazem > PRÓG_PIT)
+  then
+  begin
+    czêœæ1 := PRÓG_PIT - (podstawaRazem - podstawa);
+    czêœæ1 := czêœæ1 * PIT_MN;
+    czêœæ2 := (podstawaRazem - PRÓG_PIT) * PIT_W;
+    result := round(czêœæ1 + czêœæ2 - WOLNA_KW)
+  end
+  else
+    result := round(podstawa * PIT_W - WOLNA_KW);
+end;
+
+function liczNieskonczone26(podstawa, podstawaRazem, BruttoRazem: Double): Double;
+var
+  czêœæ1, czêœæ2, zaliczka: Double;
+begin
+  if BruttoRazem < PRÓG_DLA_26 then
+  begin
+  zaliczka:= 0
+  end
+  else if (BruttoRazem > PRÓG_DLA_26) and (PodstawaRazem < PRÓG_PIT *2) then
+  begin
+  zaliczka:= round(redDoSetnych(podstawa * PIT_MN)-WOLNA_KW)
+  end
+  else if (PodstawaRazem > PRÓG_PIT * 2) and (PodstawaRazem < PRÓG_PIT * 2 + podstawa) then
+  begin
+  czêœæ2:= podstawaRazem - (PRÓG_PIT *2);
+  czêœæ1:= podstawa - czêœæ2;
+  czêœæ1:= czêœæ1 * 0.17;
+  czêœæ2:= czêœæ2 * 0.32;
+  zaliczka:= round(czêœæ1+czêœæ2-WOLNA_KW);
+  end
+  else
+  begin
+  zaliczka:= round(redDoSetnych(podstawa * PIT_W));
+  end;
+  result:=zaliczka;
+end;
+
+ function dajStycznioweNetto(brutto: Double; kosztPrzychodu: Double;
+  ulga26: Boolean): Double;
+var
+  I: Integer;
+var
+  bruttoRazem, spo³eczneRazem, podstawaRazem, ulga, emerytalne, rentowe,
+  chorobowe, podstawa, zaliczka, zdrowotne: Double;
+begin
+  bruttoRazem:=0;
+  spo³eczneRazem := ZUS_LIMIT;
+  podstawaRazem := 0;
+
+  begin
+    bruttoRazem:= brutto;
+    ulga := liczUlgê(brutto);
+    emerytalne := liczSpoleczne(brutto, spo³eczneRazem, PROC_EMERYT);
+    rentowe := liczSpoleczne(brutto, spo³eczneRazem, PROC_RENTOW);
+    chorobowe := brutto * PROC_CHOROB;
+    podstawa := round(brutto - emerytalne - rentowe -
+      chorobowe - kosztPrzychodu - ulga);
+    podstawaRazem := podstawaRazem + podstawa;
+
+   if ulga26 = true then
+    zaliczka:= liczNieskonczone26(podstawa, podstawaRazem, bruttoRazem)
+  else
+    zaliczka := liczZaliczkê(podstawa, podstawaRazem);
+
+    zdrowotne := (brutto - emerytalne - rentowe -
+      chorobowe) * PROC_ZDR;
+
+    result := redDoSetnych(brutto - emerytalne - rentowe
+    - chorobowe - zaliczka - zdrowotne);
+  end;
+  end;
+
+function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean): Double;
+var
+  min, max, I: Integer;
+  wynik, stycznioweNetto: Double;
+
+begin
+  wynik := -1;
+  min := trunc(netto * 100);
+  max := trunc(netto * 200);
+
+  for I := min to max do
+  begin
+    stycznioWeNetto := dajStycznioweNetto(I/100, kPrzychodu, ulgaDo26);
+    if stycznioWeNetto = netto then
+    begin
+    wynik := I/100;
+    break
+    end;
+  end;
+
+  result := wynik;
+end;
+
+end.

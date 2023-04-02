@@ -1,0 +1,20 @@
+unit Spoleczne;
+
+interface
+
+uses
+  Narzedzia;
+
+implementation
+
+function licz(brutto, emerytalneRazem, proc: Double): Double;
+begin
+  if brutto < emerytalneRazem then
+    result := redDoSetnych(brutto * proc)
+  else if (brutto > emerytalneRazem) AND (emerytalneRazem > 0) then
+    result := redDoSetnych(emerytalneRazem * proc)
+  else
+    result := 0;
+end;
+
+end.
