@@ -14,20 +14,20 @@ function liczZaliczke(podstawa, podstawaRazem, BruttoRazem, progPit,
 
 implementation
 
-function liczProgowyMiesiac(progPit, wolnaKwota, podstawa, podstawaRazem: Double;
-zdrDoOdliczenia: Double = 0): Double;
-begin
-    var czesc1 := progPit - (podstawaRazem - podstawa);
-    czesc1 := czesc1 * PIT_MN;
-    var czesc2 := (podstawaRazem - progPit) * PIT_W;
-    result := round(redDoSetnych(czesc1 + czesc2 - wolnaKwota) -
-      zdrDoOdliczenia);
-end;
-
 function liczZaliczke(podstawa, podstawaRazem, BruttoRazem, progPit,
   wolnaKwota: Double; ulga26: Boolean; zdrDoOdliczenia: Double = 0): Double;
-begin
+  function liczProgowyMiesiac(progPit, wolnaKwota, podstawa,
+    podstawaRazem: Double; zdrDoOdliczenia: Double = 0): Double;
+  var
+    czesc1, czesc2: Double;
+  begin
+    czesc1 := (progPit - (podstawaRazem - podstawa)) * PIT_MN;
+    czesc2 := (podstawaRazem - progPit) * PIT_W;
+    result := round(redDoSetnych(czesc1 + czesc2 - wolnaKwota) -
+      zdrDoOdliczenia);
+  end;
 
+begin
   if ulga26 then
     progPit := progPit * 2;
 
@@ -37,8 +37,7 @@ begin
     result := minZero(round(podstawa * PIT_MN - wolnaKwota - zdrDoOdliczenia))
   else if (podstawaRazem - podstawa < progPit) AND (podstawaRazem > progPit)
   then
-    result := liczProgowyMiesiac(progPit, wolnaKwota, podstawa, podstawaRazem,
-      zdrDoOdliczenia)
+    result := liczProgowyMiesiac(progPit, wolnaKwota, podstawa, podstawaRazem, zdrDoOdliczenia)
   else
     result := round(redDoSetnych(podstawa * PIT_W) - zdrDoOdliczenia);
 end;

@@ -8,13 +8,10 @@ uses
   UnitMiesiecznePracodawcy in 'Model\UnitMiesiecznePracodawcy.pas',
   KalkulatorKosztowPracodawcy in 'KalkulatorKosztowPracodawcy.pas',
   UnitMiesieczne in 'Model\UnitMiesieczne.pas',
-  Narzedzia in 'Funkcje\Narzedzia.pas',
-  Spoleczne in 'Funkcje\Spoleczne.pas',
-  UlgaDlaKlasySredniej in 'Funkcje\UlgaDlaKlasySredniej.pas',
-  Zaliczka in 'Funkcje\Zaliczka.pas',
   UnitDaneRoczne in 'Model\UnitDaneRoczne.pas',
   BruttoNaNetto in 'BruttoNaNetto.pas',
-  NettoNaBrutto in 'NettoNaBrutto.pas';
+  NettoNaBrutto in 'NettoNaBrutto.pas',
+  Narzedzia in 'Narzedzia.pas';
 
 {$R *.res}
 

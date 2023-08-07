@@ -4,8 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, UnitMiesieczne, unitMiesiaceRoku, Spoleczne, Narzedzia,
-  UlgaDlaKlasySredniej, BruttoNaNetto, unitDaneRoczne;
+  System.Classes, UnitMiesieczne, unitMiesiaceRoku, Narzedzia, BruttoNaNetto, unitDaneRoczne;
 
 function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rok: Rok): Double;
 

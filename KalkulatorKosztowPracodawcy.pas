@@ -4,7 +4,7 @@ interface
 
 uses
 System.SysUtils, unitMiesiaceRoku, UnitMiesiecznePracodawcy,
-Narzedzia, Spoleczne;
+Narzedzia, BruttoNaNetto;
 
 const
 PROC_EMERYT = 0.0976;
