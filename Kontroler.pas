@@ -27,6 +27,9 @@ Const
 
 type
 
+  tablicaPorownan = Array [1 .. 3, 1 .. 12] of Double;
+  MSC = UnitMiesieczne.miesieczne;
+  tablicaMiesiecy = UnitMiesieczne.tablicaMiesiecy;
   TKontroler = class
   public
     function stworzTablice(brutto, kosztPrzychodu: Double; ulga26: Boolean;
@@ -39,10 +42,9 @@ type
     function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean;
       rok: rok): Double;
     function liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
+    function stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok)
+  : tablicaPorownan;
   end;
-
-  MSC = UnitMiesieczne.miesieczne;
-  tablicaMiesiecy = UnitMiesieczne.tablicaMiesiecy;
 
 implementation
 
@@ -163,6 +165,25 @@ begin
     end;
   end;
   result := wynik;
+end;
+
+function TKontroler.stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok)
+  : tablicaPorownan;
+var
+  I: Integer;
+  tp: tablicaPorownan;
+  tm1, tm2: UnitMiesieczne.tablicaMiesiecy;
+
+begin
+  tm1 := stworzTablice(brutto, k_przychodu, ulga26, rok21);
+  tm2 := stworzTablice(brutto, k_przychodu, ulga26, rok22);
+  for I := 1 to 12 do
+  begin
+    tp[1][I] := tm1[I].netto;
+    tp[2][I] := tm2[I].netto;
+    tp[3][I] := tm2[I].netto - tm1[I].netto;
+  end;
+  result := tp;
 end;
 
 end.
