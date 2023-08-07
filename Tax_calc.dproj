@@ -110,9 +110,8 @@
         <DCCReference Include="KalkulatorKosztowPracodawcy.pas"/>
         <DCCReference Include="Model\UnitMiesieczne.pas"/>
         <DCCReference Include="Model\UnitDaneRoczne.pas"/>
-        <DCCReference Include="BruttoNaNetto.pas"/>
-        <DCCReference Include="NettoNaBrutto.pas"/>
         <DCCReference Include="Narzedzia.pas"/>
+        <DCCReference Include="Kontroler.pas"/>
         <None Include="Funkcje\__history"/>
         <None Include="Funkcje\__recovery"/>
         <BuildConfiguration Include="Release">

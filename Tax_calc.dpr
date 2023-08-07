@@ -9,9 +9,8 @@ uses
   KalkulatorKosztowPracodawcy in 'KalkulatorKosztowPracodawcy.pas',
   UnitMiesieczne in 'Model\UnitMiesieczne.pas',
   UnitDaneRoczne in 'Model\UnitDaneRoczne.pas',
-  BruttoNaNetto in 'BruttoNaNetto.pas',
-  NettoNaBrutto in 'NettoNaBrutto.pas',
-  Narzedzia in 'Narzedzia.pas';
+  Narzedzia in 'Narzedzia.pas',
+  Kontroler in 'Kontroler.pas';
 
 {$R *.res}
 
