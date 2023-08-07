@@ -26,14 +26,14 @@ implementation
 
 constructor KosztPracodawcy.create(brutto, ZUS_LIMIT: Double);
 var I: Integer;
-    spo쿮czneRazem: Double;
+    spoleczneRazem: Double;
 begin
-spo쿮czneRazem := ZUS_LIMIT;
+spoleczneRazem := ZUS_LIMIT;
 for I := 1 to 12 do
 begin
 tabMsc[I]:= MscKosztPracodawcy.Create;
-tabMsc[I].emerytalne := liczSpoleczne(brutto, spo쿮czneRazem, PROC_EMERYT);
-tabMsc[I].rentowe := liczSpoleczne(brutto, spo쿮czneRazem, PROC_RENTOW);
+tabMsc[I].emerytalne := liczSpoleczne(brutto, spoleczneRazem, PROC_EMERYT);
+tabMsc[I].rentowe := liczSpoleczne(brutto, spoleczneRazem, PROC_RENTOW);
 tabMsc[I].wypadkowe:= brutto * WYPADKOWE;
 tabMsc[I].fundPracy:= brutto * FUNDUSZ_PRACY;
 tabMsc[I].FGSP:= brutto * FGSP;
@@ -43,7 +43,7 @@ tabMsc[I].kosztPracodawcy:= tabMsc[i].emerytalne
 + tabMsc[i].fundPracy
 + tabMsc[i].FGSP;
 tabMsc[I].kosztLaczny:= brutto + tabMsc[I].kosztPracodawcy;
-spo쿮czneRazem := spo쿮czneRazem - brutto;
+spoleczneRazem := spoleczneRazem - brutto;
 end;
 end;
 

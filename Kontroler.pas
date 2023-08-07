@@ -35,18 +35,18 @@ type
     function liczSpoleczne(brutto, razem, proc: Double): Double;
     function liczZaliczke(podstawa, podstawaRazem, BruttoRazem, progPit,
       wolnaKwota: Double; ulga26: Boolean; zdrDoOdliczenia: Double = 0): Double;
-    function liczUlgê(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
+    function liczUlge(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
     function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean;
       rok: rok): Double;
     function liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
   end;
 
   MSC = UnitMiesieczne.miesieczne;
-  tablicaMiesiêcy = UnitMiesieczne.tablicaMiesiecy;
+  tablicaMiesiecy = UnitMiesieczne.tablicaMiesiecy;
 
 implementation
 
-function TKontroler.liczUlgê(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
+function TKontroler.liczUlge(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
 begin
   if (brutto >= ULGA_PROG_1) and (brutto < ULGA_PROG_2) and czyUlgaDlaSredniej then
     result := redDoSetnych((brutto * 0.0668 - 380.5) / PIT_MN)
@@ -115,19 +115,19 @@ end;
 function TKontroler.stworzTablice(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
 wlkTablicy: Integer = 12): tablicaMiesiecy;
 var
-  BruttoRazem, spo³eczneRazem, podstawaRazem, ulga, podstawaZdr, zdrDoOdliczenia: Double;
+  BruttoRazem, spoleczneRazem, podstawaRazem, ulga, podstawaZdr, zdrDoOdliczenia: Double;
   tm: UnitMiesieczne.tablicaMiesiecy;
 begin
   BruttoRazem := 0;
-  spo³eczneRazem := rok.limitZus;
+  spoleczneRazem := rok.limitZus;
   podstawaRazem := 0;
   for var I := 1 to wlkTablicy do
   begin
     tm[I] := MSC.Create;
     BruttoRazem := BruttoRazem + brutto;
-    ulga := liczUlgê(brutto, rok.czyUlgaDlaSredniej);
-    tm[I].emerytalne := liczSpoleczne(brutto, spo³eczneRazem, PROC_EMERYT);
-    tm[I].rentowe := liczSpoleczne(brutto, spo³eczneRazem, PROC_RENTOW);
+    ulga := liczUlge(brutto, rok.czyUlgaDlaSredniej);
+    tm[I].emerytalne := liczSpoleczne(brutto, spoleczneRazem, PROC_EMERYT);
+    tm[I].rentowe := liczSpoleczne(brutto, spoleczneRazem, PROC_RENTOW);
     tm[I].chorobowe := redDoSetnych(brutto * PROC_CHOROB);
     podstawaZdr:= redDoSetnych(brutto - tm[I].emerytalne - tm[I].rentowe - tm[I].chorobowe);
     tm[I].podstawa := minZero(round(podstawaZdr - kosztPrzychodu - ulga));
@@ -137,7 +137,7 @@ begin
     liczZaliczke(tm[I].podstawa, podstawaRazem, bruttoRazem, rok.progPit, rok.kwotaWolna, ulga26, zdrDoOdliczenia);
     tm[i].zdrowotne := liczZdrowotne(podstawaZdr, tm[i].podstawa, rok);
     tm[I].netto := redDoSetnych(podstawaZdr - tm[I].zaliczka - tm[I].zdrowotne);
-    spo³eczneRazem := spo³eczneRazem - brutto;
+    spoleczneRazem := spoleczneRazem - brutto;
   end;
   result := tm;
 end;
