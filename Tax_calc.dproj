@@ -109,13 +109,10 @@
         <DCCReference Include="Model\UnitMiesiecznePracodawcy.pas"/>
         <DCCReference Include="KalkulatorKosztowPracodawcy.pas"/>
         <DCCReference Include="Model\UnitMiesieczne.pas"/>
-        <DCCReference Include="Funkcje\Narzedzia.pas"/>
-        <DCCReference Include="Funkcje\Spoleczne.pas"/>
-        <DCCReference Include="Funkcje\UlgaDlaKlasySredniej.pas"/>
-        <DCCReference Include="Funkcje\Zaliczka.pas"/>
         <DCCReference Include="Model\UnitDaneRoczne.pas"/>
         <DCCReference Include="BruttoNaNetto.pas"/>
         <DCCReference Include="NettoNaBrutto.pas"/>
+        <DCCReference Include="Narzedzia.pas"/>
         <None Include="Funkcje\__history"/>
         <None Include="Funkcje\__recovery"/>
         <BuildConfiguration Include="Release">
@@ -140,15 +137,15 @@
                 </Source>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\Tax_calc.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>Tax_calc.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="Funkcje\__recovery" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Tax_calc.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>Tax_calc.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
