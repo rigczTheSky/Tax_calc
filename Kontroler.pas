@@ -41,17 +41,15 @@ type
   public
     function stworzTablice(brutto, kosztPrzychodu: Double; ulga26: Boolean;
       rok: rok; wlkTablicy: Integer = 12): tablicaMiesiecy;
+    function dajKosztyPracodawcy(brutto, ZUS_LIMIT: Double): roczneKosztyPracodawcy;
+     function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rok: rok): Double;
+    function stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok): tablicaPorownan;
   private
     function liczSpoleczne(brutto, razem, proc: Double): Double;
     function liczZaliczke(podstawa, podstawaRazem, BruttoRazem, progPit,
       wolnaKwota: Double; ulga26: Boolean; zdrDoOdliczenia: Double = 0): Double;
     function liczUlge(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
-    function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean;
-      rok: rok): Double;
     function liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
-    function stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok)
-  : tablicaPorownan;
-    function dajKoszty(brutto, ZUS_LIMIT: Double): roczneKosztyPracodawcy;
   end;
 
 implementation
@@ -102,7 +100,7 @@ begin
     result := round(redDoSetnych(podstawa * PIT_W) - zdrDoOdliczenia);
 end;
 
-function TKontroler.dajKoszty(brutto, ZUS_LIMIT: Double)
+function TKontroler.dajKosztyPracodawcy(brutto, ZUS_LIMIT: Double)
   : roczneKosztyPracodawcy;
 var
   I: Integer;

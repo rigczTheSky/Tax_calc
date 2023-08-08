@@ -6,9 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  BruttoNaNetto, UnitMiesieczne, PorownanieRozliczen,
-  KalkulatorKosztowPracodawcy, NettoNaBrutto,
-  Vcl.Grids, UnitMiesiaceRoku, UnitMiesiecznePracodawcy, Vcl.NumberBox, UnitDaneRoczne;
+  UnitMiesieczne, Kontroler, Vcl.Grids, UnitMiesiaceRoku,
+  UnitMiesiecznePracodawcy, Vcl.NumberBox, UnitDaneRoczne;
 
 const
   ZUS_LIMIT_21 = 157770;
@@ -117,20 +116,22 @@ begin
       FormGlowny.SGPracodawca.Cells[j, l] := floatToStr(tabP[j, l]);
 end;
 
-procedure wypelnijPorownanie(brutto, k_przychodu: Double; ulgaDo26: Boolean; rok21, rok22: Rok);
-var tp : tablicaPorownan;
+procedure wypelnijPorownanie(tp: TablicaPorownan);
 begin
-  tp := stworzPorownanie(brutto, k_przychodu, ulgaDo26, rok21, rok22);
 for var i := 1 to 3 do
   for var k := 1 to 12 do
     FormGlowny.SgPorownanie.Cells[i, k] := floatToStr(tp[i, k]);
 end;
 
 procedure liczIDrukuj(brutto: Double);
+var
+  kontroler: TKontroler;
+  tp: tablicaPorownan;
 
 begin
   var rok21 := Rok.daj21;
   var rok22 := Rok.daj22;
+  kontroler := TKontroler.create;
 
   case FormGlowny.CbWybierzKalk.ItemIndex of
     -1:
@@ -138,14 +139,14 @@ begin
     0:
       begin
         FormGlowny.LbPoleTxt.Caption := '';
-        tm := stworzTablice(brutto, k_przychodu, ulgaDo26, rok21);
+        tm := kontroler.stworzTablice(brutto, k_przychodu, ulgaDo26, rok21);
         pokazTbPracownika;
         wypelnijTbPracownika;
       end;
     1:
       begin
         FormGlowny.LbPoleTxt.Caption := '';
-        tm := stworzTablice(brutto, k_przychodu, ulgaDo26, rok22);
+        tm := kontroler.stworzTablice(brutto, k_przychodu, ulgaDo26, rok22);
         pokazTbPracownika;
         wypelnijTbPracownika;
       end;
@@ -153,38 +154,38 @@ begin
       begin
         FormGlowny.LbPoleTxt.Caption := '';
         pokazTbPorownanie;
-        wypelnijPorownanie(brutto, k_przychodu, ulgaDo26, rok21, rok22);
+        tp := kontroler.stworzPorownanie(brutto, k_przychodu, ulgaDo26, rok21, rok22);
+        wypelnijPorownanie(tp);
       end;
     3:
       begin
         FormGlowny.LbPoleTxt.Caption := WIAD_KOSZT_PRACODAWCY;
-        tmp := KosztPracodawcy.create(brutto, ZUS_LIMIT_21).tabMsc;
+        tmp := kontroler.dajKosztyPracodawcy(brutto, ZUS_LIMIT_21);
         pokazTbPracodawcy;
         wypelnijTbPracodawcy;
       end;
     4:
       begin
         FormGlowny.LbPoleTxt.Caption := WIAD_KOSZT_PRACODAWCY;
-        tmp := KosztPracodawcy.create(brutto, ZUS_LIMIT_22).tabMsc;
+        tmp := kontroler.dajKosztyPracodawcy(brutto, ZUS_LIMIT_22);
         pokazTbPracodawcy;
         wypelnijTbPracodawcy;
       end;
     5:
       begin
         pokazTbPracownika;
-        bruttoZNetto := NettoNaBrutto.dajBrutto(brutto, k_przychodu,
-          ulgaDo26, rok21);
+        bruttoZNetto := kontroler.dajBrutto(brutto, k_przychodu, ulgaDo26, rok21);
         FormGlowny.LbPoleTxt.Caption := floatToStr(bruttoZNetto) + WIAD_NETTO_NA_BRUTTO;
-        tm := stworzTablice(bruttoZNetto, k_przychodu, ulgaDo26, rok21);
+        tm := kontroler.stworzTablice(bruttoZNetto, k_przychodu, ulgaDo26, rok21);
          wypelnijTbPracownika;
       end;
     6:
       begin
         pokazTbPracownika;
-        bruttoZNetto := NettoNaBrutto.dajBrutto(brutto, k_przychodu,
+        bruttoZNetto := kontroler.dajBrutto(brutto, k_przychodu,
           ulgaDo26, rok22);
         FormGlowny.LbPoleTxt.Caption := floatToStr(bruttoZNetto) + WIAD_NETTO_NA_BRUTTO;
-        tm := stworzTablice(bruttoZNetto, k_przychodu, ulgaDo26, rok22);
+        tm := kontroler.stworzTablice(bruttoZNetto, k_przychodu, ulgaDo26, rok22);
          wypelnijTbPracownika;
       end;
   end;
