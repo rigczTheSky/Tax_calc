@@ -39,7 +39,7 @@ type
   tablicaMiesiecy = UnitMiesieczne.tablicaMiesiecy;
   TKontroler = class
   public
-    function stworzTablice(brutto, kosztPrzychodu: Double; ulga26: Boolean;
+    function dajNetto(brutto, kosztPrzychodu: Double; ulga26: Boolean;
       rok: rok; wlkTablicy: Integer = 12): tablicaMiesiecy;
     function dajKosztyPracodawcy(brutto, ZUS_LIMIT: Double): roczneKosztyPracodawcy;
      function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rok: rok): Double;
@@ -50,6 +50,7 @@ type
       wolnaKwota: Double; ulga26: Boolean; zdrDoOdliczenia: Double = 0): Double;
     function liczUlge(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
     function liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
+    function liczZdrowotne(podstawaZdr, podstawaPIT: Double; rok: Rok): Double;
   end;
 
 implementation
@@ -134,7 +135,7 @@ begin
     result := 0;
 end;
 
-function liczZdrowotne(podstawaZdr, podstawaPIT: Double; rok: Rok): Double;
+function TKontroler.liczZdrowotne(podstawaZdr, podstawaPIT: Double; rok: Rok): Double;
 var zdrowotne: Double;
 var prezaliczka: Double;//zaliczka PIT bez odjêtej sk³adki zdrowotnej
 begin
@@ -146,7 +147,7 @@ else
 result := zdrowotne;
 end;
 
-function TKontroler.stworzTablice(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
+function TKontroler.dajNetto(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
 wlkTablicy: Integer = 12): tablicaMiesiecy;
 var
   BruttoRazem, spoleczneRazem, podstawaRazem, ulga, podstawaZdr, zdrDoOdliczenia: Double;
@@ -187,7 +188,7 @@ begin
   max := trunc(netto * 200);
   for I := min to max do
   begin
-    tm := stworzTablice(I/100, kPrzychodu, ulgaDo26, rok, 1);
+    tm := dajNetto(I/100, kPrzychodu, ulgaDo26, rok, 1);
     stycznioweNetto := tm[1].netto;
     tm[1].Free;
     if stycznioWeNetto = netto then
@@ -207,8 +208,8 @@ var
   tm1, tm2: UnitMiesieczne.tablicaMiesiecy;
 
 begin
-  tm1 := stworzTablice(brutto, k_przychodu, ulga26, rok21);
-  tm2 := stworzTablice(brutto, k_przychodu, ulga26, rok22);
+  tm1 := dajNetto(brutto, k_przychodu, ulga26, rok21);
+  tm2 := dajNetto(brutto, k_przychodu, ulga26, rok22);
   for I := 1 to 12 do
   begin
     tp[1][I] := tm1[I].netto;
