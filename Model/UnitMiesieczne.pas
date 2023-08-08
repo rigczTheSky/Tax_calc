@@ -5,8 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  unitMiesiaceRoku;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls;
 
 type
   miesieczne = class
@@ -31,7 +30,7 @@ begin
   for var i := 1 to length(tm) do
   begin
     tekst := tekst
-          + MIESIACE_ROKU[i]
+          + FormatSettings.LongMonthNames[i]
     + ' - spo³eczne: ' +floatToStr(tm[i].emerytalne + tm[i].rentowe + tm[i].chorobowe)
     + ' podstawa: ' + floatToStr(tm[i].podstawa)
     + ' zaliczka PIT: ' + floatToStr(tm[i].zaliczka)

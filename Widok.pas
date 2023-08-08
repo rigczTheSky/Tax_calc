@@ -6,8 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  UnitMiesieczne, Kontroler, Vcl.Grids, UnitMiesiaceRoku,
-  UnitMiesiecznePracodawcy, Vcl.NumberBox, UnitDaneRoczne;
+  UnitMiesieczne, Kontroler, Vcl.Grids, UnitMiesiecznePracodawcy, Vcl.NumberBox, UnitDaneRoczne;
 
 const
   ZUS_LIMIT_21 = 157770;
@@ -70,7 +69,7 @@ const
   begin
     FormGlowny.SgPracownik.Show;
     for var I := 1 to 12 do
-      FormGlowny.SgPracownik.Cells[0, I] := MIESIACE_ROKU[I];
+      FormGlowny.SgPracownik.Cells[0, I] := FormatSettings.LongMonthNames[I];
     for var K := 1 to 7 do
       FormGlowny.SgPracownik.Cells[K, 0] := POLA[K];
   end;
@@ -82,7 +81,7 @@ const
   begin
     FormGlowny.SGPracodawca.Show;
     for var I := 1 to 12 do
-      FormGlowny.SGPracodawca.Cells[0, I] := MIESIACE_ROKU[I];
+      FormGlowny.SGPracodawca.Cells[0, I] := FormatSettings.LongMonthNames[I];
     for var K := 1 to 7 do
       FormGlowny.SGPracodawca.Cells[K, 0] := POLA[K];
   end;
@@ -93,7 +92,7 @@ const
   begin
     FormGlowny.SgPorownanie.Show;
     for var I := 1 to 12 do
-      FormGlowny.SgPorownanie.Cells[0, I] := MIESIACE_ROKU[I];
+      FormGlowny.SgPorownanie.Cells[0, I] := FormatSettings.LongMonthNames[I];
     for var K := 1 to 3 do
       FormGlowny.SgPorownanie.Cells[K, 0] := POLA[K];
   end;
@@ -139,14 +138,14 @@ begin
     0:
       begin
         FormGlowny.LbPoleTxt.Caption := '';
-        tm := kontroler.stworzTablice(brutto, k_przychodu, ulgaDo26, rok21);
+        tm := kontroler.dajNetto(brutto, k_przychodu, ulgaDo26, rok21);
         pokazTbPracownika;
         wypelnijTbPracownika;
       end;
     1:
       begin
         FormGlowny.LbPoleTxt.Caption := '';
-        tm := kontroler.stworzTablice(brutto, k_przychodu, ulgaDo26, rok22);
+        tm := kontroler.dajNetto(brutto, k_przychodu, ulgaDo26, rok22);
         pokazTbPracownika;
         wypelnijTbPracownika;
       end;
@@ -176,7 +175,7 @@ begin
         pokazTbPracownika;
         bruttoZNetto := kontroler.dajBrutto(brutto, k_przychodu, ulgaDo26, rok21);
         FormGlowny.LbPoleTxt.Caption := floatToStr(bruttoZNetto) + WIAD_NETTO_NA_BRUTTO;
-        tm := kontroler.stworzTablice(bruttoZNetto, k_przychodu, ulgaDo26, rok21);
+        tm := kontroler.dajNetto(bruttoZNetto, k_przychodu, ulgaDo26, rok21);
          wypelnijTbPracownika;
       end;
     6:
@@ -185,7 +184,7 @@ begin
         bruttoZNetto := kontroler.dajBrutto(brutto, k_przychodu,
           ulgaDo26, rok22);
         FormGlowny.LbPoleTxt.Caption := floatToStr(bruttoZNetto) + WIAD_NETTO_NA_BRUTTO;
-        tm := kontroler.stworzTablice(bruttoZNetto, k_przychodu, ulgaDo26, rok22);
+        tm := kontroler.dajNetto(bruttoZNetto, k_przychodu, ulgaDo26, rok22);
          wypelnijTbPracownika;
       end;
   end;
