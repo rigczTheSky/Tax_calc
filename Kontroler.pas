@@ -123,6 +123,7 @@ begin
     tabMsc[I].kosztLaczny := brutto + tabMsc[I].kosztPracodawcy;
     spoleczneRazem := spoleczneRazem - brutto;
   end;
+  result := tabMsc;
 end;
 
 function TKontroler.liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
