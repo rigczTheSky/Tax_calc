@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  UnitMiesieczne, unitMiesiaceRoku, Narzedzia, UnitDaneRoczne;
+  UnitMiesieczne, unitMiesiaceRoku, Narzedzia, UnitDaneRoczne, UnitMiesiecznePracodawcy;
 
 Const
   ZUS_LIMIT = 177660;
@@ -24,6 +24,13 @@ Const
   ULGA_PROG_1 = 5701;
   ULGA_PROG_2 = 8549;
   ULGA_PROG_3 = 11141;
+  EMERYTALNE_PRACODAWCY = 0.0976;
+  RENTOWE_PRACODAWCY = 0.065;
+  WYPADKOWE = 0.0167;
+  FUNDUSZ_PRACY = 0.0245;
+  FGSP = 0.001;
+  WRN_K_PRACODAWCY = 'UWAGA! OBLICZENIA KOSZTÓW PRACODAWCY DLA WYNAGRODZENIA' +
+    sLineBreak + 'POWY¯EJ 100 TYS. Z£OTYCH MIESIÊCZNIE MOG¥ BYÆ OBARCZONE B£ÊDEM!'#13#10'';
 
 type
 
@@ -44,6 +51,7 @@ type
     function liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
     function stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok)
   : tablicaPorownan;
+    function dajKoszty(brutto, ZUS_LIMIT: Double): roczneKosztyPracodawcy;
   end;
 
 implementation
@@ -92,6 +100,31 @@ begin
     result := liczProgowyMiesiac(progPit, wolnaKwota, podstawa, podstawaRazem, zdrDoOdliczenia)
   else
     result := round(redDoSetnych(podstawa * PIT_W) - zdrDoOdliczenia);
+end;
+
+function TKontroler.dajKoszty(brutto, ZUS_LIMIT: Double)
+  : roczneKosztyPracodawcy;
+var
+  I: Integer;
+  spoleczneRazem: Double;
+  tabMsc: roczneKosztyPracodawcy;
+begin
+  spoleczneRazem := ZUS_LIMIT;
+  for I := 1 to 12 do
+  begin
+    tabMsc[I] := MscKosztPracodawcy.Create;
+    tabMsc[I].emerytalne := liczSpoleczne(brutto, spoleczneRazem,
+      EMERYTALNE_PRACODAWCY);
+    tabMsc[I].rentowe := liczSpoleczne(brutto, spoleczneRazem,
+      RENTOWE_PRACODAWCY);
+    tabMsc[I].WYPADKOWE := brutto * WYPADKOWE;
+    tabMsc[I].fundPracy := brutto * FUNDUSZ_PRACY;
+    tabMsc[I].FGSP := brutto * FGSP;
+    tabMsc[I].kosztPracodawcy := tabMsc[I].emerytalne + tabMsc[I].rentowe +
+      tabMsc[I].WYPADKOWE + tabMsc[I].fundPracy + tabMsc[I].FGSP;
+    tabMsc[I].kosztLaczny := brutto + tabMsc[I].kosztPracodawcy;
+    spoleczneRazem := spoleczneRazem - brutto;
+  end;
 end;
 
 function TKontroler.liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;

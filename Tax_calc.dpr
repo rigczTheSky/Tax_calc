@@ -5,7 +5,6 @@ uses
   Widok in 'Widok.pas' {FormGlowny},
   UnitMiesiaceRoku in 'Model\UnitMiesiaceRoku.pas',
   UnitMiesiecznePracodawcy in 'Model\UnitMiesiecznePracodawcy.pas',
-  KalkulatorKosztowPracodawcy in 'KalkulatorKosztowPracodawcy.pas',
   UnitMiesieczne in 'Model\UnitMiesieczne.pas',
   UnitDaneRoczne in 'Model\UnitDaneRoczne.pas',
   Narzedzia in 'Narzedzia.pas',
