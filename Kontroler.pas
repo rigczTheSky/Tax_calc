@@ -4,8 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-   Narzedzia, Model;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls, Model;
 
 Const
   ZUS_LIMIT = 177660;
@@ -49,6 +48,8 @@ type
     function liczUlge(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
     function liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
     function liczZdrowotne(podstawaZdr, podstawaPIT: Double; rok: Rok): Double;
+    class function redDoSetnych(liczba: Double): Double;
+    class function minZero(liczba: Double): Double;
   end;
 
 implementation
@@ -109,7 +110,7 @@ begin
   spoleczneRazem := ZUS_LIMIT;
   for I := 1 to 12 do
   begin
-    tabMsc[I] := MscKosztPracodawcy.Create;
+    tabMsc[I] := TMscKosztPracodawcy.Create;
     tabMsc[I].emerytalne := liczSpoleczne(brutto, spoleczneRazem,
       EMERYTALNE_PRACODAWCY);
     tabMsc[I].rentowe := liczSpoleczne(brutto, spoleczneRazem,
@@ -215,6 +216,21 @@ begin
     tp[3][I] := tm2[I].netto - tm1[I].netto;
   end;
   result := tp;
+end;
+
+class function TKontroler.redDoSetnych(liczba: Double): Double;
+begin
+  liczba := liczba * 100;
+  liczba := round(liczba);
+  result := liczba / 100;
+end;
+
+class function TKontroler.minZero(liczba: Double): Double;
+begin
+  if liczba < 0 then
+    result := 0
+  else
+    result := liczba;
 end;
 
 end.

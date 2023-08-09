@@ -104,7 +104,6 @@
             <Form>FormGlowny</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Narzedzia.pas"/>
         <DCCReference Include="Kontroler.pas"/>
         <DCCReference Include="Model.pas"/>
         <None Include="Funkcje\__history"/>
