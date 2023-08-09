@@ -21,6 +21,7 @@ type
   TRoczneKosztyPracownika = Array [1 .. 12] of TMiesiecznePracownika;
   TroczneKosztyPracodawcy = Array [1 .. 12] of TMscKosztPracodawcy;
   TTablicaRoczna = Array [1 .. 7, 1 .. 12] of Double;
+  TTablicaPorownan = Array [1 .. 3, 1 .. 12] of Double;
 
   TRozliczenieRoczne = class
 
@@ -39,15 +40,14 @@ type
     czyOdliczycZdrowotne, czyUlgaDlaSredniej: Boolean;
     progPit, kwotaWolna, limitZus: Double;
   public
-
     constructor create(Rok: TRok);
-    function dajRoczneKosztyPracownikaWLiczbach(tm: TRoczneKosztyPracownika): TTablicaRoczna;
-    function dajRoczneKosztyPracodawcyWLiczbach(rkp: TroczneKosztyPracodawcy): TTablicaRoczna;
+    class function dajRoczneKosztyPracownikaWLiczbach (tm: TRoczneKosztyPracownika): TTablicaRoczna;
+    class function dajRoczneKosztyPracodawcyWLiczbach (rkp: TroczneKosztyPracodawcy): TTablicaRoczna;
   end;
 
 implementation
 
-function TRozliczenieRoczne.dajRoczneKosztyPracownikaWLiczbach (tm: TRoczneKosztyPracownika): TTablicaRoczna;
+class function TRozliczenieRoczne.dajRoczneKosztyPracownikaWLiczbach (tm: TRoczneKosztyPracownika): TTablicaRoczna;
 var
   tr: TTablicaRoczna;
 begin
@@ -64,7 +64,7 @@ begin
   result := tr;
 end;
 
-function TRozliczenieRoczne.dajRoczneKosztyPracodawcyWLiczbach (rkp: TroczneKosztyPracodawcy): TTablicaRoczna;
+class function TRozliczenieRoczne.dajRoczneKosztyPracodawcyWLiczbach (rkp: TroczneKosztyPracodawcy): TTablicaRoczna;
 var
   tr: TTablicaRoczna;
 begin

@@ -3,22 +3,15 @@ unit Widok;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  Kontroler, Vcl.Grids, Vcl.NumberBox, Model;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls, Kontroler, Vcl.Grids,
+  Vcl.NumberBox, Model;
 
 const
-  ZUS_LIMIT_21 = 157770;
-  ZUS_LIMIT_22 = 177660;
-  KWOTA_MN = 250;
-  KWOTA_WK = 300;
   BLD_KALK = 'Wybierz kalkulator dla obliczenia';
   BLD_UJEMNA_KW = 'Podana kwota nie mo¿e byæ liczb¹ mniejsz¹ od 0 z³.';
-  WIAD_NETTO_NA_BRUTTO =
-  ' z³: kwota dla stycznia. Tabela przedstawia netto dla pozosta³ych miesiêcy.';
-  WIAD_KOSZT_PRACODAWCY =
-  'UWAGA! Po przekroczeniu rocznego limitu sk³adek ZUS mog¹ wyst¹piæ b³êdy.';
+  WIAD_NETTO_NA_BRUTTO = ' z³: kwota dla stycznia. Tabela przedstawia netto dla pozosta³ych miesiêcy.';
+  WIAD_KOSZT_PRACODAWCY = 'UWAGA! Po przekroczeniu rocznego limitu sk³adek ZUS mog¹ wyst¹piæ b³êdy.';
 
 type
   TFormGlowny = class(TForm)
@@ -43,176 +36,176 @@ type
 
 var
   FormGlowny: TFormGlowny;
-  tm: TRoczneKosztyPracownika;
-  tmp: TRoczneKosztyPracodawcy;
-  tp: tablicaPorownan;
-  k_przychodu: Double;
-  ulgaDo26: Boolean;
-  bruttoZNetto: Double;
 
 implementation
 
 {$R *.dfm}
 
-procedure ustawKoszt;
+function dajKoszt: Integer;
 begin
   if (FormGlowny.RgZamieszkanie.ItemIndex = 0) then
-    k_przychodu := KWOTA_MN
+    Result := TRozliczenieRoczne.KOSZT_MN
   else
-    k_przychodu := KWOTA_WK;
+    Result := TRozliczenieRoczne.KOSZT_WK;
+end;
+
+function czyUlgaDo26: Boolean;
+begin
+  if FormGlowny.CbUlga26.Checked then
+    Result := true
+  else
+    Result := false;
 end;
 
 procedure pokazTbPracownika;
 const
   POLA: Array [1 .. 7] of String = ('Emerytalne', 'Rentowe', 'Chorobowe',
     'Podstawa PIT', 'zaliczka PIT', 'Zdrowotne', 'Netto');
-  begin
-    FormGlowny.SgPracownik.Show;
-    for var I := 1 to 12 do
-      FormGlowny.SgPracownik.Cells[0, I] := FormatSettings.LongMonthNames[I];
-    for var K := 1 to 7 do
-      FormGlowny.SgPracownik.Cells[K, 0] := POLA[K];
-  end;
+begin
+  FormGlowny.SGPracownik.Show;
+  for var I := 1 to 12 do
+    FormGlowny.SGPracownik.Cells[0, I] := FormatSettings.LongMonthNames[I];
+  for var K := 1 to 7 do
+    FormGlowny.SGPracownik.Cells[K, 0] := POLA[K];
+end;
 
 procedure pokazTbPracodawcy;
 const
   POLA: Array [1 .. 7] of String = ('Emerytalne', 'Rentowe', 'Wypadkowe',
     'Fund. Pracy', 'FGSP', 'koszt', 'koszt ³¹czny');
-  begin
-    FormGlowny.SGPracodawca.Show;
-    for var I := 1 to 12 do
-      FormGlowny.SGPracodawca.Cells[0, I] := FormatSettings.LongMonthNames[I];
-    for var K := 1 to 7 do
-      FormGlowny.SGPracodawca.Cells[K, 0] := POLA[K];
-  end;
+begin
+  FormGlowny.SGPracodawca.Show;
+  for var I := 1 to 12 do
+    FormGlowny.SGPracodawca.Cells[0, I] := FormatSettings.LongMonthNames[I];
+  for var K := 1 to 7 do
+    FormGlowny.SGPracodawca.Cells[K, 0] := POLA[K];
+end;
 
 procedure pokazTbPorownanie;
 const
-  POLA: Array [1 .. 3] of String = ('2021','2022','Ró¿nica' );
-  begin
-    FormGlowny.SgPorownanie.Show;
-    for var I := 1 to 12 do
-      FormGlowny.SgPorownanie.Cells[0, I] := FormatSettings.LongMonthNames[I];
-    for var K := 1 to 3 do
-      FormGlowny.SgPorownanie.Cells[K, 0] := POLA[K];
-  end;
-
-procedure wypelnijTbPracownika;
+  POLA: Array [1 .. 3] of String = ('2021', '2022', 'Ró¿nica');
 begin
-  var
-  tab := dajRoczneKosztyPracownikaWLiczbach(tm);
-  for var j := 1 to 7 do
-    for var l := 1 to 12 do
-      FormGlowny.SgPracownik.Cells[j, l] := floatToStr(tab[j, l]);
+  FormGlowny.SGPorownanie.Show;
+  for var I := 1 to 12 do
+    FormGlowny.SGPorownanie.Cells[0, I] := FormatSettings.LongMonthNames[I];
+  for var K := 1 to 3 do
+    FormGlowny.SGPorownanie.Cells[K, 0] := POLA[K];
 end;
 
-procedure wypelnijTbPracodawcy;
-var tabP: TTablicaRoczna;
+procedure wypelnijTbPracownika(tm: TRoczneKosztyPracownika);
 begin
-  tabP := dajRoczneKosztyPracodawcyWLiczbach(tmp);
+  var
+  tab := TRozliczenieRoczne.dajRoczneKosztyPracownikaWLiczbach(tm);
+  for var j := 1 to 7 do
+    for var l := 1 to 12 do
+      FormGlowny.SGPracownik.Cells[j, l] := floatToStr(tab[j, l]);
+end;
+
+procedure wypelnijTbPracodawcy(tmp: TRoczneKosztyPracodawcy);
+var
+  tabP: TTablicaRoczna;
+begin
+  tabP := TRozliczenieRoczne.dajRoczneKosztyPracodawcyWLiczbach(tmp);
   for var j := 1 to 7 do
     for var l := 1 to 12 do
       FormGlowny.SGPracodawca.Cells[j, l] := floatToStr(tabP[j, l]);
 end;
 
-procedure wypelnijPorownanie(tp: TablicaPorownan);
+procedure wypelnijPorownanie(tp: TTablicaPorownan);
 begin
-for var i := 1 to 3 do
-  for var k := 1 to 12 do
-    FormGlowny.SgPorownanie.Cells[i, k] := floatToStr(tp[i, k]);
+  for var I := 1 to 3 do
+    for var K := 1 to 12 do
+      FormGlowny.SGPorownanie.Cells[I, K] := floatToStr(tp[I, K]);
 end;
 
 procedure liczIDrukuj(brutto: Double);
 var
-  kontroler: TKontroler;
-  tp: tablicaPorownan;
+  Kontroler: TKontroler;
+  tp: TTablicaPorownan;
   rok21, rok22: TRozliczenieRoczne;
+  tm: TRoczneKosztyPracownika;
+  tmp: TRoczneKosztyPracodawcy;
+  bruttoZNetto: Double;
 
 begin
   rok21 := TRozliczenieRoczne.create(R2021);
   rok22 := TRozliczenieRoczne.create(R2022);
-  kontroler := TKontroler.create;
+  Kontroler := TKontroler.create;
 
   case FormGlowny.CbWybierzKalk.ItemIndex of
-    -1:
+    - 1:
       showMessage(BLD_KALK);
     0:
       begin
         FormGlowny.LbPoleTxt.Caption := '';
-        tm := kontroler.dajNetto(brutto, k_przychodu, ulgaDo26, rok21);
-        pokazTbPracownika;
-        wypelnijTbPracownika;
+        tm := Kontroler.dajNetto(brutto, dajKoszt, czyUlgaDo26, rok21); pokazTbPracownika;
+        wypelnijTbPracownika(tm);
       end;
     1:
       begin
         FormGlowny.LbPoleTxt.Caption := '';
-        tm := kontroler.dajNetto(brutto, k_przychodu, ulgaDo26, rok22);
-        pokazTbPracownika;
-        wypelnijTbPracownika;
+        tm := Kontroler.dajNetto(brutto, dajKoszt, czyUlgaDo26, rok22); pokazTbPracownika;
+        wypelnijTbPracownika(tm);
       end;
     2:
       begin
         FormGlowny.LbPoleTxt.Caption := '';
         pokazTbPorownanie;
-        tp := kontroler.stworzPorownanie(brutto, k_przychodu, ulgaDo26, rok21, rok22);
+        tp := Kontroler.stworzPorownanie(brutto, dajKoszt, czyUlgaDo26, rok21, rok22);
         wypelnijPorownanie(tp);
       end;
     3:
       begin
         FormGlowny.LbPoleTxt.Caption := WIAD_KOSZT_PRACODAWCY;
-        tmp := kontroler.dajKosztyPracodawcy(brutto, ZUS_LIMIT_21);
+        tmp := Kontroler.dajKosztyPracodawcy(brutto, rok21.limitZus);
         pokazTbPracodawcy;
-        wypelnijTbPracodawcy;
+        wypelnijTbPracodawcy(tmp);
       end;
     4:
       begin
         FormGlowny.LbPoleTxt.Caption := WIAD_KOSZT_PRACODAWCY;
-        tmp := kontroler.dajKosztyPracodawcy(brutto, ZUS_LIMIT_22);
+        tmp := Kontroler.dajKosztyPracodawcy(brutto, rok22.limitZus);
         pokazTbPracodawcy;
-        wypelnijTbPracodawcy;
+        wypelnijTbPracodawcy(tmp);
       end;
     5:
       begin
         pokazTbPracownika;
-        bruttoZNetto := kontroler.dajBrutto(brutto, k_przychodu, ulgaDo26, rok21);
+        bruttoZNetto := Kontroler.dajBrutto(brutto, dajKoszt, czyUlgaDo26, rok21);
         FormGlowny.LbPoleTxt.Caption := floatToStr(bruttoZNetto) + WIAD_NETTO_NA_BRUTTO;
-        tm := kontroler.dajNetto(bruttoZNetto, k_przychodu, ulgaDo26, rok21);
-         wypelnijTbPracownika;
+        tm := Kontroler.dajNetto(bruttoZNetto, dajKoszt, czyUlgaDo26, rok21);
+        wypelnijTbPracownika(tm);
       end;
     6:
       begin
         pokazTbPracownika;
-        bruttoZNetto := kontroler.dajBrutto(brutto, k_przychodu,
-          ulgaDo26, rok22);
+        bruttoZNetto := Kontroler.dajBrutto(brutto, dajKoszt, czyUlgaDo26, rok22);
         FormGlowny.LbPoleTxt.Caption := floatToStr(bruttoZNetto) + WIAD_NETTO_NA_BRUTTO;
-        tm := kontroler.dajNetto(bruttoZNetto, k_przychodu, ulgaDo26, rok22);
-         wypelnijTbPracownika;
+        tm := Kontroler.dajNetto(bruttoZNetto, dajKoszt, czyUlgaDo26, rok22);
+        wypelnijTbPracownika(tm);
       end;
   end;
+  rok21.Free;
+  rok22.Free;
+  Kontroler.Free;
 end;
 
 procedure TFormGlowny.BtObliczClick(Sender: TObject);
 
 begin
-  ustawKoszt;
+  FormGlowny.SGPracownik.Hide;
+  FormGlowny.SGPorownanie.Hide;
+  FormGlowny.SGPracodawca.Hide;
 
-    FormGlowny.SgPracownik.Hide;
-    FormGlowny.SgPorownanie.Hide;
-    FormGlowny.SGPracodawca.Hide;
-
-  if CbUlga26.Checked then
-       ulgaDo26:= true
-  else ulgaDo26:= false;
-
-if NbWprowadzKwote.ValueFloat >= 0 then
-  liczIDrukuj(NbWprowadzKwote.ValueFloat)
-else
- ShowMessage(BLD_UJEMNA_KW);
+  if NbWprowadzKwote.ValueFloat >= 0 then
+    liczIDrukuj(NbWprowadzKwote.ValueFloat)
+  else
+    showMessage(BLD_UJEMNA_KW);
 end;
 
 procedure TFormGlowny.FormCreate(Sender: TObject);
 begin
- SgPracownik.Show;
+  SGPracownik.Show;
 end;
 
 end.
