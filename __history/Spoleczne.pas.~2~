@@ -1,9 +1,0 @@
-unit Spoleczne;
-
-interface
-
-function licz
-
-implementation
-
-end.
