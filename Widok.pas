@@ -126,10 +126,11 @@ procedure liczIDrukuj(brutto: Double);
 var
   kontroler: TKontroler;
   tp: tablicaPorownan;
+  rok21, rok22: TRozliczenieRoczne;
 
 begin
-  var rok21 := Rok.daj21;
-  var rok22 := Rok.daj22;
+  rok21 := TRozliczenieRoczne.create(R2021);
+  rok22 := TRozliczenieRoczne.create(R2022);
   kontroler := TKontroler.create;
 
   case FormGlowny.CbWybierzKalk.ItemIndex of

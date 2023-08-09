@@ -37,17 +37,17 @@ type
   TKontroler = class
   public
     function dajNetto(brutto, kosztPrzychodu: Double; ulga26: Boolean;
-      rok: rok; wlkTablicy: Integer = 12): TRoczneKosztyPracownika;
+      rozliczenieRoczne: TRozliczenieRoczne; wlkTablicy: Integer = 12): TRoczneKosztyPracownika;
     function dajKosztyPracodawcy(brutto, ZUS_LIMIT: Double): TRoczneKosztyPracodawcy;
-     function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rok: rok): Double;
-    function stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok): tablicaPorownan;
+     function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rozliczenieRoczne: TRozliczenieRoczne): Double;
+    function stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: TRozliczenieRoczne): tablicaPorownan;
   private
     function liczSpoleczne(brutto, razem, proc: Double): Double;
     function liczZaliczke(podstawa, podstawaRazem, BruttoRazem, progPit,
       wolnaKwota: Double; ulga26: Boolean; zdrDoOdliczenia: Double = 0): Double;
     function liczUlge(brutto: Double; czyUlgaDlaSredniej: Boolean): Double;
-    function liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
-    function liczZdrowotne(podstawaZdr, podstawaPIT: Double; rok: Rok): Double;
+    function liczZdrDoOdliczenia(rozliczenieRoczne: TRozliczenieRoczne; podstawaZdr: Double): Double;
+    function liczZdrowotne(podstawaZdr, podstawaPIT: Double; rozliczenieRoczne: TRozliczenieRoczne): Double;
     class function redDoSetnych(liczba: Double): Double;
     class function minZero(liczba: Double): Double;
   end;
@@ -126,57 +126,57 @@ begin
   result := tabMsc;
 end;
 
-function TKontroler.liczZdrDoOdliczenia(rok: rok; podstawaZdr: Double): Double;
+function TKontroler.liczZdrDoOdliczenia(rozliczenieRoczne: TRozliczenieRoczne; podstawaZdr: Double): Double;
 begin
-  if rok.czyOdliczycZdrowotne then
+  if rozliczenieRoczne.czyOdliczycZdrowotne then
     result := podstawaZdr * PROC_ZDR_OD
   else
     result := 0;
 end;
 
-function TKontroler.liczZdrowotne(podstawaZdr, podstawaPIT: Double; rok: Rok): Double;
+function TKontroler.liczZdrowotne(podstawaZdr, podstawaPIT: Double; rozliczenieRoczne: TRozliczenieRoczne): Double;
 var zdrowotne: Double;
 var prezaliczka: Double;//zaliczka PIT bez odjêtej sk³adki zdrowotnej
 begin
 zdrowotne := redDoSetnych(podstawaZdr * PROC_ZDR);
-prezaliczka :=  redDoSetnych(podstawaPIT * PIT_MN - rok.kwotaWolna);
-if (zdrowotne > prezaliczka) and (rok.czyOdliczycZdrowotne) then
+prezaliczka :=  redDoSetnych(podstawaPIT * PIT_MN - rozliczenieRoczne.kwotaWolna);
+if (zdrowotne > prezaliczka) and (rozliczenieRoczne.czyOdliczycZdrowotne) then
 result := minZero(prezaliczka)
 else
 result := zdrowotne;
 end;
 
-function TKontroler.dajNetto(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
-wlkTablicy: Integer = 12): TRoczneKosztyPracownika;
+function TKontroler.dajNetto(brutto, kosztPrzychodu: Double; ulga26: Boolean;
+      rozliczenieRoczne: TRozliczenieRoczne; wlkTablicy: Integer = 12): TRoczneKosztyPracownika;
 var
   BruttoRazem, spoleczneRazem, podstawaRazem, ulga, podstawaZdr, zdrDoOdliczenia: Double;
   tm: TRoczneKosztyPracownika;
 begin
   BruttoRazem := 0;
-  spoleczneRazem := rok.limitZus;
+  spoleczneRazem := rozliczenieRoczne.limitZus;
   podstawaRazem := 0;
   for var I := 1 to wlkTablicy do
   begin
     tm[I] := TMiesiecznePracownika.Create;
     BruttoRazem := BruttoRazem + brutto;
-    ulga := liczUlge(brutto, rok.czyUlgaDlaSredniej);
+    ulga := liczUlge(brutto, rozliczenieRoczne.czyUlgaDlaSredniej);
     tm[I].emerytalne := liczSpoleczne(brutto, spoleczneRazem, PROC_EMERYT);
     tm[I].rentowe := liczSpoleczne(brutto, spoleczneRazem, PROC_RENTOW);
     tm[I].chorobowe := redDoSetnych(brutto * PROC_CHOROB);
     podstawaZdr:= redDoSetnych(brutto - tm[I].emerytalne - tm[I].rentowe - tm[I].chorobowe);
     tm[I].podstawa := minZero(round(podstawaZdr - kosztPrzychodu - ulga));
     podstawaRazem := podstawaRazem + tm[I].podstawa;
-    zdrDoOdliczenia:= liczZdrDoOdliczenia(rok, podstawaZdr);
+    zdrDoOdliczenia:= liczZdrDoOdliczenia(rozliczenieRoczne, podstawaZdr);
     tm[i].zaliczka :=
-    liczZaliczke(tm[I].podstawa, podstawaRazem, bruttoRazem, rok.progPit, rok.kwotaWolna, ulga26, zdrDoOdliczenia);
-    tm[i].zdrowotne := liczZdrowotne(podstawaZdr, tm[i].podstawa, rok);
+    liczZaliczke(tm[I].podstawa, podstawaRazem, bruttoRazem, rozliczenieRoczne.progPit, rozliczenieRoczne.kwotaWolna, ulga26, zdrDoOdliczenia);
+    tm[i].zdrowotne := liczZdrowotne(podstawaZdr, tm[i].podstawa, rozliczenieRoczne);
     tm[I].netto := redDoSetnych(podstawaZdr - tm[I].zaliczka - tm[I].zdrowotne);
     spoleczneRazem := spoleczneRazem - brutto;
   end;
   result := tm;
 end;
 
-function TKontroler.dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rok: Rok): Double;
+function TKontroler.dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rozliczenieRoczne: TRozliczenieRoczne): Double;
 var
   min, max, I: Integer;
   wynik, stycznioweNetto: Double;
@@ -187,7 +187,7 @@ begin
   max := trunc(netto * 200);
   for I := min to max do
   begin
-    tm := dajNetto(I/100, kPrzychodu, ulgaDo26, rok, 1);
+    tm := dajNetto(I/100, kPrzychodu, ulgaDo26, rozliczenieRoczne, 1);
     stycznioweNetto := tm[1].netto;
     tm[1].Free;
     if stycznioWeNetto = netto then
@@ -199,7 +199,7 @@ begin
   result := wynik;
 end;
 
-function TKontroler.stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok)
+function TKontroler.stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: TRozliczenieRoczne)
   : tablicaPorownan;
 var
   I: Integer;

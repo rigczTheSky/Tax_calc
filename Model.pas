@@ -3,7 +3,26 @@ unit Model;
 interface
 
 type
-  Rok = class
+
+  TRok = (R2021, R2022);
+
+  TMiesiecznePracownika = class
+  public
+    brutto, bruttoRazem, netto, nettoRazem, podstawa, podstawaRazem, emerytalne,
+      rentowe, chorobowe, zdrowotne, zdrDoOdliczenia, zaliczka: Double;
+  end;
+
+  TMscKosztPracodawcy = class
+  var
+    emerytalne, rentowe, wypadkowe, fundPracy, FGSP, kosztPracodawcy,
+      kosztLaczny: Double;
+  end;
+
+  TRoczneKosztyPracownika = Array [1 .. 12] of TMiesiecznePracownika;
+  TroczneKosztyPracodawcy = Array [1 .. 12] of TMscKosztPracodawcy;
+  TTablicaRoczna = Array [1 .. 7, 1 .. 12] of Double;
+
+  TRozliczenieRoczne = class
 
   Const
     PROC_EMERYT = 0.0976;
@@ -19,38 +38,16 @@ type
   var
     czyOdliczycZdrowotne, czyUlgaDlaSredniej: Boolean;
     progPit, kwotaWolna, limitZus: Double;
-
-    constructor daj21;
-    constructor daj22;
-  end;
-
-type
-  TMiesiecznePracownika = class
   public
-    brutto, bruttoRazem, netto, nettoRazem, podstawa, podstawaRazem, emerytalne,
-      rentowe, chorobowe, zdrowotne, zdrDoOdliczenia, zaliczka: Double;
+
+    constructor create(Rok: TRok);
+    function dajRoczneKosztyPracownikaWLiczbach(tm: TRoczneKosztyPracownika): TTablicaRoczna;
+    function dajRoczneKosztyPracodawcyWLiczbach(rkp: TroczneKosztyPracodawcy): TTablicaRoczna;
   end;
-
-type
-  TMscKosztPracodawcy = class
-  var
-    emerytalne, rentowe, wypadkowe, fundPracy, FGSP, kosztPracodawcy,
-      kosztLaczny: Double;
-  end;
-
-  TRoczneKosztyPracownika = Array [1 .. 12] of TMiesiecznePracownika;
-  TroczneKosztyPracodawcy = Array [1 .. 12] of TMscKosztPracodawcy;
-  TTablicaRoczna = Array [1 .. 7, 1 .. 12] of Double;
-
-function dajRoczneKosztyPracownikaWLiczbach(tm: TRoczneKosztyPracownika)
-  : TTablicaRoczna;
-function dajRoczneKosztyPracodawcyWLiczbach(rkp: TroczneKosztyPracodawcy)
-  : TTablicaRoczna;
 
 implementation
 
-function dajRoczneKosztyPracownikaWLiczbach(tm: TRoczneKosztyPracownika)
-  : TTablicaRoczna;
+function TRozliczenieRoczne.dajRoczneKosztyPracownikaWLiczbach (tm: TRoczneKosztyPracownika): TTablicaRoczna;
 var
   tr: TTablicaRoczna;
 begin
@@ -67,8 +64,7 @@ begin
   result := tr;
 end;
 
-function dajRoczneKosztyPracodawcyWLiczbach(rkp: TroczneKosztyPracodawcy)
-  : TTablicaRoczna;
+function TRozliczenieRoczne.dajRoczneKosztyPracodawcyWLiczbach (rkp: TroczneKosztyPracodawcy): TTablicaRoczna;
 var
   tr: TTablicaRoczna;
 begin
@@ -85,22 +81,24 @@ begin
   result := tr;
 end;
 
-constructor Rok.daj21;
+constructor TRozliczenieRoczne.create(Rok: TRok);
 begin
-  czyOdliczycZdrowotne := true;
-  czyUlgaDlaSredniej := false;
-  progPit := 85528;
-  kwotaWolna := 43.76;
-  limitZus := 157770;
-end;
-
-constructor Rok.daj22;
-begin
-  czyOdliczycZdrowotne := false;
-  czyUlgaDlaSredniej := true;
-  progPit := 120000;
-  kwotaWolna := 425;
-  limitZus := 177660;
+  if Rok = R2021 then
+  begin
+    czyOdliczycZdrowotne := true;
+    czyUlgaDlaSredniej := false;
+    progPit := 85528;
+    kwotaWolna := 43.76;
+    limitZus := 157770;
+  end
+  else
+  begin
+    czyOdliczycZdrowotne := false;
+    czyUlgaDlaSredniej := true;
+    progPit := 120000;
+    kwotaWolna := 425;
+    limitZus := 177660;
+  end;
 end;
 
 end.
