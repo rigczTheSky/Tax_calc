@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  UnitMiesieczne, Kontroler, Vcl.Grids, UnitMiesiecznePracodawcy, Vcl.NumberBox, UnitDaneRoczne;
+  Kontroler, Vcl.Grids, Vcl.NumberBox, Model;
 
 const
   ZUS_LIMIT_21 = 157770;
@@ -43,8 +43,8 @@ type
 
 var
   FormGlowny: TFormGlowny;
-  tm: tablicaMiesiecy;
-  tmp: roczneKosztyPracodawcy;
+  tm: TRoczneKosztyPracownika;
+  tmp: TRoczneKosztyPracodawcy;
   tp: tablicaPorownan;
   k_przychodu: Double;
   ulgaDo26: Boolean;
@@ -100,16 +100,16 @@ const
 procedure wypelnijTbPracownika;
 begin
   var
-  tab := UnitMiesieczne.toArrayOfString(tm);
+  tab := dajRoczneKosztyPracownikaWLiczbach(tm);
   for var j := 1 to 7 do
     for var l := 1 to 12 do
       FormGlowny.SgPracownik.Cells[j, l] := floatToStr(tab[j, l]);
 end;
 
 procedure wypelnijTbPracodawcy;
-var tabP: txtTablicaMiesiecy;
+var tabP: TTablicaRoczna;
 begin
-  tabP := UnitMiesiecznePracodawcy.toArrayOfString(tmp);
+  tabP := dajRoczneKosztyPracodawcyWLiczbach(tmp);
   for var j := 1 to 7 do
     for var l := 1 to 12 do
       FormGlowny.SGPracodawca.Cells[j, l] := floatToStr(tabP[j, l]);

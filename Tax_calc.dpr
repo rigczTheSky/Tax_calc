@@ -3,11 +3,9 @@ program Tax_calc;
 uses
   Vcl.Forms,
   Widok in 'Widok.pas' {FormGlowny},
-  UnitMiesiecznePracodawcy in 'Model\UnitMiesiecznePracodawcy.pas',
-  UnitMiesieczne in 'Model\UnitMiesieczne.pas',
-  UnitDaneRoczne in 'Model\UnitDaneRoczne.pas',
   Narzedzia in 'Narzedzia.pas',
-  Kontroler in 'Kontroler.pas';
+  Kontroler in 'Kontroler.pas',
+  Model in 'Model.pas';
 
 {$R *.res}
 

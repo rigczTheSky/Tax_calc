@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  UnitMiesieczne, Narzedzia, UnitDaneRoczne, UnitMiesiecznePracodawcy;
+   Narzedzia, Model;
 
 Const
   ZUS_LIMIT = 177660;
@@ -35,13 +35,11 @@ Const
 type
 
   tablicaPorownan = Array [1 .. 3, 1 .. 12] of Double;
-  MSC = UnitMiesieczne.miesieczne;
-  tablicaMiesiecy = UnitMiesieczne.tablicaMiesiecy;
   TKontroler = class
   public
     function dajNetto(brutto, kosztPrzychodu: Double; ulga26: Boolean;
-      rok: rok; wlkTablicy: Integer = 12): tablicaMiesiecy;
-    function dajKosztyPracodawcy(brutto, ZUS_LIMIT: Double): roczneKosztyPracodawcy;
+      rok: rok; wlkTablicy: Integer = 12): TRoczneKosztyPracownika;
+    function dajKosztyPracodawcy(brutto, ZUS_LIMIT: Double): TRoczneKosztyPracodawcy;
      function dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rok: rok): Double;
     function stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolean; rok21, rok22: Rok): tablicaPorownan;
   private
@@ -102,11 +100,11 @@ begin
 end;
 
 function TKontroler.dajKosztyPracodawcy(brutto, ZUS_LIMIT: Double)
-  : roczneKosztyPracodawcy;
+  : TRoczneKosztyPracodawcy;
 var
   I: Integer;
   spoleczneRazem: Double;
-  tabMsc: roczneKosztyPracodawcy;
+  tabMsc: TRoczneKosztyPracodawcy;
 begin
   spoleczneRazem := ZUS_LIMIT;
   for I := 1 to 12 do
@@ -148,17 +146,17 @@ result := zdrowotne;
 end;
 
 function TKontroler.dajNetto(brutto, kosztPrzychodu: Double; ulga26: Boolean; rok: Rok;
-wlkTablicy: Integer = 12): tablicaMiesiecy;
+wlkTablicy: Integer = 12): TRoczneKosztyPracownika;
 var
   BruttoRazem, spoleczneRazem, podstawaRazem, ulga, podstawaZdr, zdrDoOdliczenia: Double;
-  tm: UnitMiesieczne.tablicaMiesiecy;
+  tm: TRoczneKosztyPracownika;
 begin
   BruttoRazem := 0;
   spoleczneRazem := rok.limitZus;
   podstawaRazem := 0;
   for var I := 1 to wlkTablicy do
   begin
-    tm[I] := MSC.Create;
+    tm[I] := TMiesiecznePracownika.Create;
     BruttoRazem := BruttoRazem + brutto;
     ulga := liczUlge(brutto, rok.czyUlgaDlaSredniej);
     tm[I].emerytalne := liczSpoleczne(brutto, spoleczneRazem, PROC_EMERYT);
@@ -181,7 +179,7 @@ function TKontroler.dajBrutto(netto, kPrzychodu: Double; ulgaDo26: Boolean; rok:
 var
   min, max, I: Integer;
   wynik, stycznioweNetto: Double;
-  tm: unitMiesieczne.tablicaMiesiecy;
+  tm: TRoczneKosztyPracownika;
 begin
   wynik := -1;
   min := trunc(netto * 100);
@@ -205,7 +203,7 @@ function TKontroler.stworzPorownanie(brutto, k_przychodu: Double; ulga26: Boolea
 var
   I: Integer;
   tp: tablicaPorownan;
-  tm1, tm2: UnitMiesieczne.tablicaMiesiecy;
+  tm1, tm2: TRoczneKosztyPracownika;
 
 begin
   tm1 := dajNetto(brutto, k_przychodu, ulga26, rok21);

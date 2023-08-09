@@ -104,14 +104,9 @@
             <Form>FormGlowny</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="PorownanieRozliczen.pas"/>
-        <DCCReference Include="Model\UnitMiesiaceRoku.pas"/>
-        <DCCReference Include="Model\UnitMiesiecznePracodawcy.pas"/>
-        <DCCReference Include="KalkulatorKosztowPracodawcy.pas"/>
-        <DCCReference Include="Model\UnitMiesieczne.pas"/>
-        <DCCReference Include="Model\UnitDaneRoczne.pas"/>
         <DCCReference Include="Narzedzia.pas"/>
         <DCCReference Include="Kontroler.pas"/>
+        <DCCReference Include="Model.pas"/>
         <None Include="Funkcje\__history"/>
         <None Include="Funkcje\__recovery"/>
         <BuildConfiguration Include="Release">
