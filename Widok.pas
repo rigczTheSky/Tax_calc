@@ -95,7 +95,7 @@ end;
 procedure wypelnijTbPracownika(tm: TRoczneKosztyPracownika);
 begin
   var
-  tab := TRozliczenieRoczne.dajRoczneKosztyPracownikaWLiczbach(tm);
+  tab := TKontroler.dajRoczneKosztyPracownikaWLiczbach(tm);
   for var j := 1 to 7 do
     for var l := 1 to 12 do
       FormGlowny.SGPracownik.Cells[j, l] := floatToStr(tab[j, l]);
@@ -105,7 +105,7 @@ procedure wypelnijTbPracodawcy(tmp: TRoczneKosztyPracodawcy);
 var
   tabP: TTablicaRoczna;
 begin
-  tabP := TRozliczenieRoczne.dajRoczneKosztyPracodawcyWLiczbach(tmp);
+  tabP := TKontroler.dajRoczneKosztyPracodawcyWLiczbach(tmp);
   for var j := 1 to 7 do
     for var l := 1 to 12 do
       FormGlowny.SGPracodawca.Cells[j, l] := floatToStr(tabP[j, l]);
